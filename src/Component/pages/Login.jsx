@@ -1,7 +1,7 @@
 import { useState } from "react";
-
 import { Link, useNavigate } from "react-router";
 import { FcGoogle } from "react-icons/fc";
+import axios from "axios";
 import { UseAuth } from "../Hook/AuthProvider";
 
 const Login = () => {
@@ -9,25 +9,40 @@ const Login = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
+  // -------------------
+  // EMAIL/PASSWORD LOGIN
+  // -------------------
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  const email = e.target.email.value;
+  const password = e.target.password.value;
 
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+  try {
+    await loginUser(email, password); // context-এ setUser করবে
+    navigate("/dashboard");
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-    try {
-      await loginUser(email, password);
-      navigate("/");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
 
+  // -------------------
+  // GOOGLE LOGIN
+  // -------------------
   const handleGoogleLogin = async () => {
     try {
-      await googleLogin();
-      navigate("/");
+      const result = await googleLogin();
+      const email = result.user.email;
+
+      const { data } = await axios.get(
+        `http://localhost:3000/users/${email}`
+      );
+
+      localStorage.setItem("role", data.role);
+
+      if (data.role === "admin") navigate("/dashboard/admin");
+      else if (data.role === "moderator") navigate("/dashboard/moderator");
+      else navigate("/dashboard/student");
     } catch (err) {
       setError(err.message);
     }
@@ -86,7 +101,6 @@ const Login = () => {
           <span className="font-medium">Continue with Google</span>
         </button>
 
-        {/* Register Link */}
         <p className="text-center mt-4">
           Don’t have an account?{" "}
           <Link to="/register" className="text-blue-600 font-medium">

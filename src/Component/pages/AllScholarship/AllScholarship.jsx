@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+
 import ScholarshipCard from "../ScholarshipCard/ScholarshiCard";
 import SearchFilter from "../SearchFilter/SearchFilter";
+import { getAuth } from "firebase/auth";
 
 const AllScholarship = () => {
   const [allScholarshipsData, setAllScholarshipsData] = useState([]);
@@ -15,18 +17,36 @@ const AllScholarship = () => {
   const [filterSubject, setFilterSubject] = useState("");
   const [sortOption, setSortOption] = useState("");
 
-  
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/scholarships")
-      .then((res) => {
+    const fetchScholarships = async () => {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user) {
+          setError("Please log in first");
+          setLoading(false);
+          return;
+        }
+
+        const token = await user.getIdToken(); // Get Firebase ID Token
+
+        const res = await axios.get("http://localhost:3000/scholarships", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         setAllScholarshipsData(res.data);
-        setLoading(false);
-      })
-      .catch(() => {
+      } catch (err) {
+        console.error(err);
         setError("Failed to load scholarships");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchScholarships();
   }, []);
 
   // Loading + Error
@@ -60,7 +80,6 @@ const AllScholarship = () => {
     <div className="max-w-7xl mx-auto px-6 py-16">
       <h1 className="text-3xl font-bold mb-6 text-center">All Scholarships</h1>
 
-      {/* Search + Filter */}
       <SearchFilter
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -74,7 +93,6 @@ const AllScholarship = () => {
         setSortOption={setSortOption}
       />
 
-      {/* Scholarships Grid */}
       <div className="grid md:grid-cols-3 gap-6">
         {filteredScholarships.length > 0 ? (
           filteredScholarships.map((scholarship, index) => (
