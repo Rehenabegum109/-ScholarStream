@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-
-
-import ScholarshipCard from "../ScholarshipCard/ScholarshiCard";
 import SearchFilter from "../SearchFilter/SearchFilter";
-import { getAuth } from "firebase/auth";
+
+
+import AxiosSecure from "../../Hook/AxiosSecore";
+import ScholarshipCard from "../ScholarshipCard/ScholarshipCard";
 
 const AllScholarship = () => {
   const [allScholarshipsData, setAllScholarshipsData] = useState([]);
@@ -20,23 +19,7 @@ const AllScholarship = () => {
   useEffect(() => {
     const fetchScholarships = async () => {
       try {
-        const auth = getAuth();
-        const user = auth.currentUser;
-
-        if (!user) {
-          setError("Please log in first");
-          setLoading(false);
-          return;
-        }
-
-        const token = await user.getIdToken(); // Get Firebase ID Token
-
-        const res = await axios.get("http://localhost:3000/scholarships", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
+        const res = await AxiosSecure.get("/scholarships");
         setAllScholarshipsData(res.data);
       } catch (err) {
         console.error(err);
@@ -45,16 +28,15 @@ const AllScholarship = () => {
         setLoading(false);
       }
     };
-
     fetchScholarships();
   }, []);
 
-  // Loading + Error
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
 
   // Filter + Search logic
-  let filteredScholarships = allScholarshipsData.filter((sch) => {
+  const filteredScholarships = allScholarshipsData.filter((sch) => {
+    if (!sch) return false; // safety check
     const matchesSearch =
       sch.universityName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sch.scholarshipCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -68,13 +50,12 @@ const AllScholarship = () => {
   });
 
   // Sorting
-  if (sortOption === "feeLow") {
-    filteredScholarships.sort((a, b) => a.fee - b.fee);
-  } else if (sortOption === "feeHigh") {
-    filteredScholarships.sort((a, b) => b.fee - a.fee);
-  } else if (sortOption === "recent") {
-    filteredScholarships.sort((a, b) => new Date(b.date) - new Date(a.date));
-  }
+  filteredScholarships.sort((a, b) => {
+    if (sortOption === "feeLow") return Number(a.fee) - Number(b.fee);
+    if (sortOption === "feeHigh") return Number(b.fee) - Number(a.fee);
+    if (sortOption === "recent") return new Date(b.date) - new Date(a.date);
+    return 0;
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-16">

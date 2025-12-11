@@ -1,10 +1,21 @@
 import { Outlet, NavLink, Link } from "react-router";
 import { UseAuth } from "../../Hook/AuthProvider";
 
+// react-icons
+import {
+  FaUser,
+  FaFileAlt,
+  FaStar,
+  FaTasks,
+  FaList,
+  FaPlusCircle,
+  FaFolderOpen,
+  FaUsers,
+  FaChartBar,
+} from "react-icons/fa";
 
 const DashboardLayout = () => {
-  const { user } = UseAuth(); 
-  // const role = user?.role; // student | moderator | admin
+  const { user } = UseAuth();
 
   return (
     <div className="flex">
@@ -14,37 +25,77 @@ const DashboardLayout = () => {
         <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
 
         {/* Common */}
-        <NavLink to="/dashboard/profile" className="block">
-          My Profile
+        <NavLink
+          to="/dashboard/profile"
+          className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded"
+        >
+          <FaUser /> My Profile
         </NavLink>
 
         {/* Student Menu */}
-        
-          
-            <NavLink to="/dashboard/student/applications">My Applications</NavLink>
-            <NavLink to="/dashboard/student/reviews">My Reviews</NavLink>
-          
-      
+        <div className="space-y-2 mt-3">
+          <NavLink
+            to="/dashboard/student/applications"
+            className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded"
+          >
+            <FaFileAlt /> My Applications
+          </NavLink>
+
+          <NavLink
+            to="/dashboard/student/reviews"
+            className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded"
+          >
+            <FaStar /> My Reviews
+          </NavLink>
+        </div>
 
         {/* Moderator Menu */}
-        
-          
-            <NavLink to="/dashboard/mod/applications">Manage Applications</NavLink>
-            <NavLink to="/dashboard/mod/reviews">All Reviews</NavLink>
-          
-        
+        <div className="space-y-2 mt-3">
+          <NavLink
+            to="/dashboard/mod/applications"
+            className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded"
+          >
+            <FaTasks /> Manage Applications
+          </NavLink>
+
+          <NavLink
+            to="/dashboard/mod/reviews"
+            className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded"
+          >
+            <FaList /> All Reviews
+          </NavLink>
+        </div>
 
         {/* Admin Menu */}
-        
-          
- <Link to="/dashboard/add-scholarship">Add Scholarship</Link>
-<Link to="/dashboard/manage-scholarships">Manage Scholarships</Link>
-<Link to="/dashboard/manage-user">Manage user</Link>
-{/* <Link to="/dashboard/profile">My Profile</Link> */}
-<Link to="/dashboard/analytics">Analytics</Link>
+        <div className="space-y-2 mt-3">
+          <NavLink
+            to="/dashboard/add-scholarship"
+            className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded"
+          >
+            <FaPlusCircle /> Add Scholarship
+          </NavLink>
 
-          
-        
+          <NavLink
+            to="/dashboard/manage-scholarships"
+            className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded"
+          >
+            <FaFolderOpen /> Manage Scholarships
+          </NavLink>
+
+          <Link
+            to="/dashboard/manage-user"
+            className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded"
+          >
+            <FaUsers /> Manage Users
+          </Link>
+
+          <NavLink
+            to="/dashboard/analytics"
+            className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded"
+          >
+            <FaChartBar /> Analytics
+          </NavLink>
+        </div>
       </aside>
 
       {/* Content */}

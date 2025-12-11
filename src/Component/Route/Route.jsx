@@ -7,8 +7,8 @@ import AllScholarship from "../pages/AllScholarship/AllScholarship";
 import ScholarshipDetails from "../pages/Home/ScholarshipDetails/ScholarshipDetails";
 import MainLayout from "../Layout/MainLayout";
 import DashboardLayout from "../Layout/Dashboard/DashboardLayout";
-import StudentDashboard from "../Layout/Dashboard/StudentDashboard";
-import ModeratorDashboard from "../Layout/Dashboard/ModeratorDashboard";
+import StudentDashboard from "../Layout/Dashboard/Student/StudentDashboard";
+import ModeratorDashboard from "../Layout/Dashboard/Moderator/ModeratorDashboard";
 import AdminDashboard from "../Layout/Dashboard/Admin/AdminDashboard";
 import PrivateRoute from "../PrivetRoute/PrivetRout";
 import RoleRedirect from "../Layout/Rool/RoolRedirect";
@@ -17,6 +17,13 @@ import ManageScholarships from "../Layout/Dashboard/Admin/ManageScholarships";
 import MyProfile from "../Layout/Dashboard/Admin/MyProfile";
 import Analytics from "../Layout/Dashboard/Admin/Analytics";
 import ManageUsers from "../Layout/Dashboard/Admin/ManageUsers";
+import ManageApplications from "../Layout/Dashboard/Moderator/ManageApplications";
+import AllReviews from "../Layout/Dashboard/Moderator/AllReviews";
+import MyApplications from "../Layout/Dashboard/Student/MyApplications";
+import MyReviews from "../Layout/Dashboard/Student/MyReviews";
+import CheckOut from "../pages/Home/Payment/CheckOut";
+import Forbidden from "../Forbidden/Forbidden";
+
 
 
 
@@ -43,9 +50,16 @@ export const router = createBrowserRouter([
         Component:AllScholarship
       },
       {
-       path: '/ScholarShipDetails/:id',
+       path: 'scholarship/:id',
         Component:ScholarshipDetails
-      }
+      },
+
+      {
+          path:'checkout',
+          element:<PrivateRoute><CheckOut/></PrivateRoute>
+      },
+        { path: "checkout/:id", Component: CheckOut }, 
+      
 
     ]
           
@@ -59,22 +73,43 @@ export const router = createBrowserRouter([
          element: <RoleRedirect/>
          },
              // ---- Admin ----
-      { path: "admin", Component: AdminDashboard },
+      { path: "admin", element: <AdminDashboard/> },
       { path: "add-scholarship", element: <AddScholarship/> },
       { path: "manage-scholarships", element: <ManageScholarships />
-
        },
        {path :'manage-user', element:<ManageUsers></ManageUsers>},
       { path: "profile", element: <MyProfile/> },
       { path: "analytics", element: <Analytics /> },
        
       { path: "student",
-         Component: StudentDashboard
-       },
-      
-      { path: "moderator", 
-        Component: ModeratorDashboard
+         element: <StudentDashboard/> },
+         {
+          path:'student/applications',
+          element:<MyApplications/>
+         },
+      {
+        path:'student/reviews',
+        element:<MyReviews/>
       },
+      { path: "moderator", 
+        element:<ModeratorDashboard/>
+      },
+      {
+        
+      path:'mod/applications',
+      element:<ManageApplications/>
+      },
+      {
+        path:'mod/reviews',
+        element:<AllReviews/>
+      }
+
     ],
+    
   },
+
+  {
+    path:'*',
+    element:<Forbidden/>
+  }
 ]);

@@ -1,22 +1,33 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Banner from "../Banner/Banner";
 import CategoriesSection from "../CategoriesSection/CategoriesSection";
 import FeatuedSection from "../FeaturedSection/FeaturedSection";
-
 import { motion } from "framer-motion";
-import ScholarshipCard from "../ScholarshipCard/ScholarshiCard";
 
-// Dummy dynamic data
-const topScholarships = [
-  { id: 1, title: "Scholarship A", description: "Full tuition for 1 year", fee: 0 },
-  { id: 2, title: "Scholarship B", description: "Partial tuition", fee: 10 },
-  { id: 3, title: "Scholarship C", description: "Merit-based", fee: 5 },
-  { id: 4, title: "Scholarship D", description: "Need-based", fee: 0 },
-  { id: 5, title: "Scholarship E", description: "Research grant", fee: 20 },
-  { id: 6, title: "Scholarship F", description: "Postgraduate funding", fee: 15 },
-];
+import AxiosSecure from "../../Hook/AxiosSecore";
+import ScholarshipCard from "../ScholarshipCard/ScholarshipCard";
+
 
 const Home = () => {
+  const [allScholarshipsData, setAllScholarshipsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchScholarships = async () => {
+      try {
+        const res = await AxiosSecure.get("/scholarships");
+        setAllScholarshipsData(res.data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load scholarships");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchScholarships();
+  }, []);
+
   return (
     <div className="min-h-screen">
 
@@ -33,20 +44,32 @@ const Home = () => {
       </section>
 
       {/* Top Scholarships Section */}
-      <section className="max-w-7xl mx-auto py-16 px-6">
-        <h2 className="text-3xl font-bold mb-8 text-center">Top Scholarships</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          {topScholarships.map((scholarship, index) => (
-            <ScholarshipCard key={scholarship.id} scholarship={scholarship} index={index} />
-          ))}
-        </div>
-      </section>
+<section className="max-w-7xl mx-auto py-16 px-6">
+  <h2 className="text-3xl font-bold mb-8 text-center">Top Scholarships</h2>
+
+  {loading ? (
+    <p className="text-center">Loading scholarships...</p>
+  ) : error ? (
+    <p className="text-center text-red-500">{error}</p>
+  ) : (
+    <div className="grid md:grid-cols-3 gap-6">
+      {allScholarshipsData
+        .sort((a, b) => a.fee - b.fee) // Optional: lowest fee first, অথবা new Date(b.date) - new Date(a.date) দিয়ে recent first
+        .slice(0, 6) // শুধুমাত্র প্রথম 6 টা scholarship দেখাবে
+        .map((scholarship, index) => (
+          <ScholarshipCard key={scholarship._id} scholarship={scholarship} index={index} />
+        ))
+      }
+    </div>
+  )}
+</section>
+
 
       {/* Featured / Other Sections */}
       <FeatuedSection />
       <CategoriesSection />
 
-            {/* Success Stories / Testimonials Section */}
+      {/* Success Stories / Testimonials Section */}
       <section className="bg-gray-100 py-16 px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

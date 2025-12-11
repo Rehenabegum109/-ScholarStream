@@ -31,9 +31,9 @@ const SearchFilter = ({
         className="border rounded px-4 py-2 w-full md:w-1/6 focus:outline-none focus:ring-2 focus:ring-blue-400"
       >
         <option value="">All Categories</option>
-        <option value="Undergraduate">Undergraduate</option>
-        <option value="Postgraduate">Postgraduate</option>
-        <option value="Research">Research</option>
+               <option value="Full fund">Full fund</option>
+          <option value="Partial">Partial</option>
+          <option value="Self-fund">Self-fund</option>
       </select>
 
       {/* Subject Filter */}
@@ -43,10 +43,12 @@ const SearchFilter = ({
         className="border rounded px-4 py-2 w-full md:w-1/6 focus:outline-none focus:ring-2 focus:ring-blue-400"
       >
         <option value="">All Subjects</option>
-        <option value="Engineering">Engineering</option>
-        <option value="Medical">Medical</option>
-        <option value="Business">Business</option>
-        <option value="Arts">Arts</option>
+     <option value="Computer Science">Computer Science</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Business">Business</option>
+          <option value="Natural Sciences">Natural Sciences</option>
+          <option value="Medicine">Medicine</option>
+          <option value="Law">Law</option>
       </select>
 
       {/* Location Filter */}
