@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import SearchFilter from "../SearchFilter/SearchFilter";
 
 
-import AxiosSecure from "../../Hook/AxiosSecore";
+
 import ScholarshipCard from "../ScholarshipCard/ScholarshipCard";
+import AxiosSecure from "../../Hook/AxiosSecore";
+
 
 const AllScholarship = () => {
   const [allScholarshipsData, setAllScholarshipsData] = useState([]);
@@ -17,19 +19,20 @@ const AllScholarship = () => {
   const [sortOption, setSortOption] = useState("");
 
   useEffect(() => {
-    const fetchScholarships = async () => {
-      try {
-        const res = await AxiosSecure.get("/scholarships");
-        setAllScholarshipsData(res.data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load scholarships");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchScholarships();
-  }, []);
+  const fetchScholarships = async () => {
+    try {
+      const res = await AxiosSecure.get("/scholarships");
+      console.log(res.data); 
+      setAllScholarshipsData(res.data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load scholarships");
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchScholarships();
+}, []);
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;

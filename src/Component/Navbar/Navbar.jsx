@@ -50,7 +50,7 @@ const Navbar = () => {
                   Payment Success
                 </Link>
                 <Link
-                  to="/payment-failed"
+                  to="/payment-cancle"
                   className="block px-4 py-2 hover:bg-gray-200"
                   onClick={() => setOpenPayment(false)}
                 >

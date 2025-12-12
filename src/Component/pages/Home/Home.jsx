@@ -54,8 +54,8 @@ const Home = () => {
   ) : (
     <div className="grid md:grid-cols-3 gap-6">
       {allScholarshipsData
-        .sort((a, b) => a.fee - b.fee) // Optional: lowest fee first, অথবা new Date(b.date) - new Date(a.date) দিয়ে recent first
-        .slice(0, 6) // শুধুমাত্র প্রথম 6 টা scholarship দেখাবে
+        .sort((a, b) => a.fee - b.fee) 
+        .slice(0, 6) 
         .map((scholarship, index) => (
           <ScholarshipCard key={scholarship._id} scholarship={scholarship} index={index} />
         ))

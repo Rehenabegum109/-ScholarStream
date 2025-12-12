@@ -11,7 +11,6 @@ import StudentDashboard from "../Layout/Dashboard/Student/StudentDashboard";
 import ModeratorDashboard from "../Layout/Dashboard/Moderator/ModeratorDashboard";
 import AdminDashboard from "../Layout/Dashboard/Admin/AdminDashboard";
 import PrivateRoute from "../PrivetRoute/PrivetRout";
-import RoleRedirect from "../Layout/Rool/RoolRedirect";
 import AddScholarship from "../Layout/Dashboard/Admin/AddScholarship";
 import ManageScholarships from "../Layout/Dashboard/Admin/ManageScholarships";
 import MyProfile from "../Layout/Dashboard/Admin/MyProfile";
@@ -23,6 +22,13 @@ import MyApplications from "../Layout/Dashboard/Student/MyApplications";
 import MyReviews from "../Layout/Dashboard/Student/MyReviews";
 import CheckOut from "../pages/Home/Payment/CheckOut";
 import Forbidden from "../Forbidden/Forbidden";
+import PaymentSuccess from "../pages/Home/Payment/PaymentSuccess";
+import PaymentFailure from "../pages/Home/Payment/PaymentFailure";
+import DashboardHome from "../Layout/Dashboard/DashboardHome";
+
+
+
+
 
 
 
@@ -59,6 +65,14 @@ export const router = createBrowserRouter([
           element:<PrivateRoute><CheckOut/></PrivateRoute>
       },
         { path: "checkout/:id", Component: CheckOut }, 
+        {
+          path:'payment-success',
+        element:<PaymentSuccess/>
+        },
+        {
+          path:'payment-cancle',
+          element:<PaymentFailure/>
+        }
       
 
     ]
@@ -70,7 +84,7 @@ export const router = createBrowserRouter([
     element: <DashboardLayout/>,
      children: [
        { index: true,
-         element: <RoleRedirect/>
+         element:<DashboardHome/>
          },
              // ---- Admin ----
       { path: "admin", element: <AdminDashboard/> },

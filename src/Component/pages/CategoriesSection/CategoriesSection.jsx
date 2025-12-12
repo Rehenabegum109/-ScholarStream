@@ -24,7 +24,7 @@ const CategoriesSection = () => {
 
       <Swiper
         modules={[Autoplay]}
-        spaceBetween={40}           // ✅ slide gap
+        spaceBetween={40}           
         slidesPerView="auto"
         loop={true}
         freeMode={false}
@@ -37,7 +37,7 @@ const CategoriesSection = () => {
         {categories.map((category, idx) => (
           <SwiperSlide
             key={idx}
-            style={{ width: "max-content" }} // ✅ ensures proper gap
+            style={{ width: "max-content" }}
           >
             <button className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition">
               {category}
