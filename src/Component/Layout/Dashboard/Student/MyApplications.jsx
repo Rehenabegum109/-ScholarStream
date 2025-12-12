@@ -1,8 +1,10 @@
+
 import React, { useEffect, useState } from "react";
 import { UseAuth } from "../../../Hook/AuthProvider";
 import ApplicationDetailsModal from "./Modal/ApplicationDetailsModal";
 import AddReviewModal from "./Modal/AddReviewModal";
 import useAxiosSecure from "../../../Hook/UseAxiosSecure";
+import { FaCreditCard, FaInfoCircle, FaPencilAlt, FaStar, FaTrash } from "react-icons/fa";
 
 const MyApplications = () => {
   const { user } = UseAuth();
@@ -24,7 +26,25 @@ const MyApplications = () => {
 
       try {
         const res = await axiosSecure.get(`/applications/student/${user.email}`);
-        setApplications(res.data || []);
+        const apps = res.data || [];
+
+        // প্রতিটি application এর সাথে scholarship details fetch
+        const appsWithDetails = await Promise.all(
+          apps.map(async (app) => {
+            if (app.scholarshipId) {
+              try {
+                const scholarshipRes = await axiosSecure.get(`/scholarships/${app.scholarshipId}`);
+                return { ...app, ...scholarshipRes.data };
+              } catch (err) {
+                console.error("Failed to fetch scholarship:", err);
+                return app;
+              }
+            }
+            return app;
+          })
+        );
+
+        setApplications(appsWithDetails);
       } catch (err) {
         console.error(err);
         setError("Failed to load applications");
@@ -56,6 +76,22 @@ const MyApplications = () => {
     setShowReviewModal(false);
   };
 
+  const handleDelete = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this application?")) return;
+
+  try {
+    const res = await axiosSecure.delete(`/applications/${id}`);
+    if (res.data.success) {
+      setApplications(prev => prev.filter(app => app._id !== id));
+    } else {
+      alert("Failed to delete application");
+    }
+  } catch (err) {
+    console.error("Delete error:", err);
+  }
+};
+
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">My Applications</h2>
@@ -84,36 +120,42 @@ const MyApplications = () => {
             {applications.map((app) => (
               <tr key={app._id} className="text-center border">
                 <td className="p-2 border">{app.universityName}</td>
-                <td className="p-2 border">{app.location || "N/A"}</td>
-                <td className="p-2 border">{app.subject}</td>
+                <td className="p-2 border">{app.universityCity || "N/A"}</td>
+                <td className="p-2 border">{app.subjectCategory || "N/A"}</td>
                 <td className="p-2 border">{app.applicationFeedback || "N/A"}</td>
-                <td className="p-2 border">{app.fee || 0}</td>
+                <td className="p-2 border">{app.applicationFees || 0}</td>
                 <td className="p-2 border">{app.applicationStatus}</td>
                 <td className="p-2 border">{app.paymentStatus}</td>
-                <td className="p-2 border space-x-1">
-                  <button
-                    onClick={() => handleOpenDetails(app)}
-                    className="bg-blue-500 text-white px-2 py-1 rounded"
-                  >
-                    Details
+                <td className="p-2 border flex justify-center items-center space-x-2">
+                  <button onClick={() => handleOpenDetails(app)} className="text-blue-500 hover:text-blue-700">
+                    <FaInfoCircle size={18} />
                   </button>
 
                   {app.applicationStatus === "pending" && (
                     <>
-                      <button className="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
+                      <button className="text-yellow-500 hover:text-yellow-700">
+                        <FaPencilAlt size={18} />
+                      </button>
+
                       {app.paymentStatus === "unpaid" && (
-                        <button className="bg-green-500 text-white px-2 py-1 rounded">Pay</button>
+                        <button className="text-green-500 hover:text-green-700">
+                          <FaCreditCard size={18} />
+                        </button>
                       )}
-                      <button className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+                      <button
+  title="Delete"
+  onClick={() => handleDelete(app._id)}
+  className="text-red-500 hover:text-red-700"
+>
+  <FaTrash size={18} />
+</button>
+
                     </>
                   )}
 
                   {app.applicationStatus === "completed" && (
-                    <button
-                      onClick={() => handleOpenReview(app)}
-                      className="bg-purple-500 text-white px-2 py-1 rounded"
-                    >
-                      Add Review
+                    <button onClick={() => handleOpenReview(app)} className="text-purple-500 hover:text-purple-700">
+                      <FaStar size={18} />
                     </button>
                   )}
                 </td>
@@ -123,12 +165,8 @@ const MyApplications = () => {
         </table>
       </div>
 
-      {showDetailsModal && (
-        <ApplicationDetailsModal application={selectedApp} onClose={handleCloseModals} />
-      )}
-      {showReviewModal && (
-        <AddReviewModal application={selectedApp} onClose={handleCloseModals} />
-      )}
+      {showDetailsModal && <ApplicationDetailsModal application={selectedApp} onClose={handleCloseModals} />}
+      {showReviewModal && <AddReviewModal application={selectedApp} onClose={handleCloseModals} />}
     </div>
   );
 };

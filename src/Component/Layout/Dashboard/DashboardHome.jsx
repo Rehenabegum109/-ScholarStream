@@ -3,14 +3,14 @@ import AdminDashboard from "./Admin/AdminDashboard";
 import ModeratorDashboard from "./Moderator/ModeratorDashboard";
 import StudentDashboard from "./Student/StudentDashboard";
 
-
 const DashboardHome = () => {
   const { role, roleLoading } = useRole();
 
-  if (roleLoading) return <Loading />;
+  // Inline loading display
+  if (roleLoading) return <div className="text-center p-4 text-lg font-medium">Loading...</div>;
 
-  if (role === "admin") return <AdminDashboard />;
-  if (role === "moderator") return <ModeratorDashboard />;
+  if (role === "Admin") return <AdminDashboard />;
+  if (role === "Moderator") return <ModeratorDashboard />;
   return <StudentDashboard />; 
 };
 

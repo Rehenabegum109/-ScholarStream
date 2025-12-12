@@ -65,79 +65,120 @@
 // export default PaymentSuccess;
 
 
-// উদাহরণ: PaymentSuccess.jsx
-import React, { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router";
+// // উদাহরণ: PaymentSuccess.jsx
+// import { useEffect, useState } from "react";
+// import { useSearchParams, useNavigate } from "react-router-dom";
+// import AxiosSecure from "../../../Hook/AxiosSecore";
+
+// const PaymentSuccess = () => {
+//   const [searchParams] = useSearchParams();
+//   const navigate = useNavigate();
+//   const applicationId = searchParams.get("applicationId");
+//   const email = searchParams.get("email");
+
+//   const [application, setApplication] = useState(null);
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     if (!applicationId) return;
+
+//     const fetchApplication = async () => {
+//       try {
+//         const res = await AxiosSecure.get(`/applications/${applicationId}`);
+//         setApplication(res.data);
+//       } catch (err) {
+//         console.error(err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchApplication();
+//   }, [applicationId]);
+
+//   if (loading) return <p>Loading...</p>;
+//   if (!application) return <p>Application not found!</p>;
+
+//   return (
+//     <div className="p-6 max-w-md mx-auto bg-white shadow rounded text-center">
+//       <h2 className="text-2xl font-bold text-green-600 mb-4">Payment Successful!</h2>
+//       <p><strong>Scholarship Name:</strong> {application.scholarshipName}</p>
+//       <p><strong>University:</strong> {application.universityName}</p>
+//       <p><strong>Amount Paid:</strong> ${application.applicationFees}</p>
+//       <p><strong>Payment Status:</strong> {application.paymentStatus}</p>
+//       <button
+//         onClick={() => navigate("/dashboard/student/applications")}
+//         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+//       >
+//         Go to My Applications
+//       </button>
+//     </div>
+//   );
+// };
+
+// export default PaymentSuccess;
+
+
+
+import { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import AxiosSecure from "../../../Hook/AxiosSecore";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-
   const applicationId = searchParams.get("applicationId");
 
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // STEP 1: Update payment status in backend
   useEffect(() => {
     if (!applicationId) return;
 
-    const updatePayment = async () => {
+    const fetchData = async () => {
       try {
-        await AxiosSecure.post("/update-payment-status", {
-          applicationId,
-          paymentStatus: "paid",
-        });
+        // 1️⃣ Get application
+        const { data: app } = await AxiosSecure.get(`/applications/${applicationId}`);
+
+        // 2️⃣ Get scholarship details
+        const { data: scholarship } = await AxiosSecure.get(`/scholarships/${app.scholarshipId}`);
+
+        app.scholarshipName = scholarship.scholarshipName;
+        app.universityName = scholarship.universityName;
+
+        // 3️⃣ Update paymentStatus if not paid
+        if (app.paymentStatus !== "paid") {
+          await AxiosSecure.post("/update-payment-status", {
+            applicationId,
+            paymentStatus: "paid",
+          });
+          app.paymentStatus = "paid";
+        }
+
+        setApplication(app);
       } catch (err) {
-        console.error("Payment Update Error:", err);
-      }
-    };
-
-    updatePayment();
-  }, [applicationId]);
-
-  // STEP 2: Fetch updated application info
-  useEffect(() => {
-    if (!applicationId) return;
-
-    const fetchApplication = async () => {
-      try {
-        const res = await AxiosSecure.get(`/applications/${applicationId}`);
-        setApplication(res.data);
-      } catch (err) {
-        console.error("Fetch Error:", err);
+        console.error("Error in PaymentSuccess:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchApplication();
+    fetchData();
   }, [applicationId]);
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-  if (!application) return <p className="text-center mt-10">Application not found!</p>;
+  if (loading) return <p>Loading...</p>;
+  if (!application) return <p>Application not found!</p>;
 
   return (
-    <div className="p-6 max-w-md mx-auto bg-white shadow rounded mt-10">
-      <h2 className="text-xl font-bold mb-4 text-green-600">Payment Successful!</h2>
-
-      <p>
-        <strong>Scholarship Name:</strong> {application.scholarshipName}
-      </p>
-      <p>
-        <strong>University:</strong> {application.universityName}
-      </p>
-      <p>
-        <strong>Application Status:</strong> {application.applicationStatus}
-      </p>
-      <p>
-        <strong>Payment Status:</strong> {application.paymentStatus}
-      </p>
-
+    <div className="p-6 max-w-md mx-auto bg-white shadow rounded text-center">
+      <h2 className="text-2xl font-bold text-green-600 mb-4">Payment Successful!</h2>
+      <p><strong>Scholarship Name:</strong> {application.scholarshipName}</p>
+      <p><strong>University:</strong> {application.universityName}</p>
+      <p><strong>Amount Paid:</strong> ${application.applicationFees}</p>
+      <p><strong>Payment Status:</strong> {application.paymentStatus}</p>
       <button
-        onClick={() => navigate("/my-applications")}
-        className="mt-5 bg-blue-600 text-white px-4 py-2 rounded"
+        onClick={() => navigate("/dashboard/student/applications")}
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
         Go to My Applications
       </button>

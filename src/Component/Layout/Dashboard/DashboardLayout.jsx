@@ -146,6 +146,12 @@ const DashboardLayout = () => {
       <aside className="w-64 h-screen bg-gray-900 text-white p-5 space-y-4">
         <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
 
+          <NavLink
+    to="/"
+    className="flex items-center gap-3 p-2 hover:bg-gray-800 rounded"
+  >
+    🏠 Home
+  </NavLink>
         {/* Common */}
         <NavLink
           to="/dashboard/profile"
@@ -223,6 +229,8 @@ const DashboardLayout = () => {
           </div>
         )}
       </aside>
+
+
 
       {/* Content */}
       <main className="flex-1 p-6 bg-[#E8F1FF]">

@@ -1,30 +1,41 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import axios from "axios";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import AxiosSecure from "../Hook/AxiosSecore";
 import { UseAuth } from "../Hook/AuthProvider";
 
 const Login = () => {
   const { loginUser, googleLogin } = UseAuth();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePassword = () => setShowPassword(!showPassword);
 
   // -------------------
   // EMAIL/PASSWORD LOGIN
   // -------------------
   const handleLogin = async (e) => {
-  e.preventDefault();
-  const email = e.target.email.value;
-  const password = e.target.password.value;
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
 
-  try {
-    await loginUser(email, password); // context-এ setUser করবে
-    navigate("/dashboard");
-  } catch (err) {
-    console.error(err);
-  }
-};
+    try {
+      await loginUser(email, password);
 
+      // AxiosSecure দিয়ে backend থেকে role fetch
+      const { data } = await AxiosSecure.get(`/users/${email}/role`);
+      const role = data.role || "student";
+      localStorage.setItem("role", role);
+
+      // Successful login -> navigate home
+      navigate("/home");
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || err.message || "Login failed");
+    }
+  };
 
   // -------------------
   // GOOGLE LOGIN
@@ -34,17 +45,15 @@ const Login = () => {
       const result = await googleLogin();
       const email = result.user.email;
 
-      const { data } = await axios.get(
-        `http://localhost:3000/users/${email}`
-      );
+      const { data } = await AxiosSecure.get(`/users/${email}/role`);
+      const role = data.role || "student";
+      localStorage.setItem("role", role);
 
-      localStorage.setItem("role", data.role);
-
-      if (data.role === "admin") navigate("/dashboard/admin");
-      else if (data.role === "moderator") navigate("/dashboard/moderator");
-      else navigate("/dashboard/student");
+      // Successful login -> navigate home
+      navigate("/home");
     } catch (err) {
-      setError(err.message);
+      console.error(err);
+      setError(err.response?.data?.message || err.message || "Google login failed");
     }
   };
 
@@ -67,14 +76,20 @@ const Login = () => {
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label className="block font-medium mb-1">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               required
               className="w-full px-3 py-2 border rounded"
             />
+            <span
+              className="absolute right-3 top-9 cursor-pointer text-gray-500"
+              onClick={togglePassword}
+            >
+              {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+            </span>
           </div>
 
           <button
