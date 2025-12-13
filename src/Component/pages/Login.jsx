@@ -13,9 +13,7 @@ const Login = () => {
 
   const togglePassword = () => setShowPassword(!showPassword);
 
-  // -------------------
-  // EMAIL/PASSWORD LOGIN
-  // -------------------
+ 
   const handleLogin = async (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -24,13 +22,13 @@ const Login = () => {
     try {
       await loginUser(email, password);
 
-      // AxiosSecure দিয়ে backend থেকে role fetch
+  
       const { data } = await AxiosSecure.get(`/users/${email}/role`);
       const role = data.role || "student";
       localStorage.setItem("role", role);
 
-      // Successful login -> navigate home
-      navigate("/home");
+    
+      navigate("/");
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || err.message || "Login failed");
@@ -50,7 +48,7 @@ const Login = () => {
       localStorage.setItem("role", role);
 
       // Successful login -> navigate home
-      navigate("/home");
+      navigate("/");
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || err.message || "Google login failed");

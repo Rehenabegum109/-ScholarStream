@@ -5,8 +5,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut,
+  
   updateProfile,
+  signOut,
 } from "firebase/auth";
 import { auth } from "../../Firebase/Firebase.int";
 const googleProvider = new GoogleAuthProvider();
@@ -48,7 +49,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Logout
-  const logout = () => {
+  const logOut = () => {
     setLoading(true);
     return signOut(auth);
   };
@@ -71,7 +72,7 @@ export const AuthProvider = ({ children }) => {
         loginUser,
         googleLogin,
         updateUserProfile,
-        logout,
+        logOut,
       }}
     >
       {children}

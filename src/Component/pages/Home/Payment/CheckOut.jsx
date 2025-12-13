@@ -378,6 +378,7 @@ const CheckOut = () => {
     queryKey: ["scholarship", id],
     queryFn: async () => {
       const res = await AxiosSecure.get(`/scholarships/${id}`);
+      console.log(res)
       return res.data;
     },
   });

@@ -59,20 +59,30 @@ export const router = createBrowserRouter([
        path: 'scholarship/:id',
         Component:ScholarshipDetails
       },
-
       {
-          path:'checkout',
-          element:<PrivateRoute><CheckOut/></PrivateRoute>
+     
+  path: 'checkout',
+  element: <CheckOut/>
+
       },
-        { path: "checkout/:id", Component: CheckOut }, 
-        {
-          path:'payment-success',
-        element:<PaymentSuccess/>
-        },
-        {
-          path:'payment-cancle',
-          element:<PaymentFailure/>
-        }
+      
+       {
+  path: "checkout/:id",
+  element: (
+    
+      <CheckOut />
+  
+  )
+},
+{
+      path: "payment-success",
+      element: <PaymentSuccess/>
+    },
+    {
+      path: "payment-cancel",
+      element: <PaymentFailure />
+    },
+        
       
 
     ]
@@ -86,6 +96,8 @@ export const router = createBrowserRouter([
        { index: true,
          element:<DashboardHome/>
          },
+         
+    
              // ---- Admin ----
       { path: "admin", element: <AdminDashboard/> },
       { path: "add-scholarship", element: <AddScholarship/> },

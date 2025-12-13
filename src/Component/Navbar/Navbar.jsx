@@ -4,7 +4,7 @@ import logo from '../../assets/image/images (1).jpg';
 import { UseAuth } from "../Hook/AuthProvider";
 
 const Navbar = () => {
-  const { user, logout } = UseAuth();
+  const { user, logOut } = UseAuth();
   const [openProfile, setOpenProfile] = useState(false);
   const [openPayment, setOpenPayment] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -24,41 +24,7 @@ const Navbar = () => {
           <Link to="/" className="hover:text-gray-100">Home</Link>
           <Link to="/scholarship" className="hover:text-gray-100">All Scholarships</Link>
 
-          {/* Payment Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setOpenPayment(!openPayment)}
-              className="hover:text-gray-100 focus:outline-none"
-            >
-              Payment ▼
-            </button>
-
-            {openPayment && (
-              <div className="absolute mt-2 w-48 bg-white text-black rounded shadow-lg right-0 transition-all duration-200">
-                <Link
-                  to="/checkout"
-                  className="block px-4 py-2 hover:bg-gray-200"
-                  onClick={() => setOpenPayment(false)}
-                >
-                 Payment Checkout
-                </Link>
-                <Link
-                  to="/payment-success"
-                  className="block px-4 py-2 hover:bg-gray-200"
-                  onClick={() => setOpenPayment(false)}
-                >
-                  Payment Success
-                </Link>
-                <Link
-                  to="/payment-cancle"
-                  className="block px-4 py-2 hover:bg-gray-200"
-                  onClick={() => setOpenPayment(false)}
-                >
-                  Payment Failed
-                </Link>
-              </div>
-            )}
-          </div>
+          
         </div>
 
         {/* Auth / Profile */}
@@ -87,7 +53,7 @@ const Navbar = () => {
                   </Link>
                   <button
                     className="block w-full text-left px-4 py-2 hover:bg-gray-200"
-                    onClick={logout}
+                    onClick={logOut}
                   >
                     Logout
                   </button>

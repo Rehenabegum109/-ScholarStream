@@ -9,7 +9,7 @@ const MyReviews = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await AxiosSecure.get("/reviews"); // user filter লাগলে যোগ করতে হবে
+        const res = await AxiosSecure.get("/reviews"); 
         setReviews(res.data);
       } catch (err) {
         console.error("Failed to fetch reviews", err);

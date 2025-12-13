@@ -61,35 +61,26 @@
 
 // export default PaymentFailure;
 
-import { useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import AxiosSecure from "../../../Hook/AxiosSecore";
+import { useNavigate } from "react-router-dom";
 
 const PaymentFailure = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const applicationId = searchParams.get("applicationId");
-
-  useEffect(() => {
-    if (!applicationId) return;
-
-    // Update payment status to unpaid
-    AxiosSecure.post("/update-payment-status", {
-      applicationId,
-      paymentStatus: "unpaid",
-    }).catch(err => console.error(err));
-  }, [applicationId]);
 
   return (
-    <div className="container mx-auto mt-10 text-center">
-      <h1 className="text-red-600 text-3xl font-bold">Payment Failed!</h1>
-      <p>Your payment did not complete. You can try again.</p>
-      <button
-        onClick={() => navigate("/dashboard")}
-        className="btn mt-5 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Return to Dashboard
-      </button>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="bg-white shadow p-6 rounded text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">
+          Payment Cancelled ❌
+        </h2>
+        <p>You cancelled the payment.</p>
+
+        <button
+          onClick={() => navigate("/dashboard/student/applications")}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          Back to Applications
+        </button>
+      </div>
     </div>
   );
 };

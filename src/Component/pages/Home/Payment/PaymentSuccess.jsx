@@ -120,68 +120,49 @@
 
 
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import AxiosSecure from "../../../Hook/AxiosSecore";
+import useAxiosSecure from "../../../Hook/UseAxiosSecure";
+
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const applicationId = searchParams.get("applicationId");
+  const axiosSecure = useAxiosSecure();
 
-  const [application, setApplication] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const applicationId = searchParams.get("applicationId");
 
   useEffect(() => {
     if (!applicationId) return;
 
-    const fetchData = async () => {
+    const updatePayment = async () => {
       try {
-        // 1️⃣ Get application
-        const { data: app } = await AxiosSecure.get(`/applications/${applicationId}`);
-
-        // 2️⃣ Get scholarship details
-        const { data: scholarship } = await AxiosSecure.get(`/scholarships/${app.scholarshipId}`);
-
-        app.scholarshipName = scholarship.scholarshipName;
-        app.universityName = scholarship.universityName;
-
-        // 3️⃣ Update paymentStatus if not paid
-        if (app.paymentStatus !== "paid") {
-          await AxiosSecure.post("/update-payment-status", {
-            applicationId,
-            paymentStatus: "paid",
-          });
-          app.paymentStatus = "paid";
-        }
-
-        setApplication(app);
+        await axiosSecure.post("/update-payment-status", {
+          applicationId,
+        });
       } catch (err) {
-        console.error("Error in PaymentSuccess:", err);
-      } finally {
-        setLoading(false);
+        console.error("Payment update failed:", err);
       }
     };
 
-    fetchData();
-  }, [applicationId]);
-
-  if (loading) return <p>Loading...</p>;
-  if (!application) return <p>Application not found!</p>;
+    updatePayment();
+  }, [applicationId, axiosSecure]);
 
   return (
-    <div className="p-6 max-w-md mx-auto bg-white shadow rounded text-center">
-      <h2 className="text-2xl font-bold text-green-600 mb-4">Payment Successful!</h2>
-      <p><strong>Scholarship Name:</strong> {application.scholarshipName}</p>
-      <p><strong>University:</strong> {application.universityName}</p>
-      <p><strong>Amount Paid:</strong> ${application.applicationFees}</p>
-      <p><strong>Payment Status:</strong> {application.paymentStatus}</p>
-      <button
-        onClick={() => navigate("/dashboard/student/applications")}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Go to My Applications
-      </button>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="bg-white shadow p-6 rounded text-center">
+        <h2 className="text-2xl font-bold text-green-600 mb-4">
+          Payment Successful 🎉
+        </h2>
+        <p>Your application fee has been paid successfully.</p>
+
+        <button
+          onClick={() => navigate("/dashboard/student/applications")}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          Go to My Applications
+        </button>
+      </div>
     </div>
   );
 };
