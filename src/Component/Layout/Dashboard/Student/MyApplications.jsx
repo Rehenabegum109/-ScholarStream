@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { UseAuth } from "../../../Hook/AuthProvider";
 import ApplicationDetailsModal from "./Modal/ApplicationDetailsModal";
@@ -17,6 +16,7 @@ const MyApplications = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
 
+  // Fetch applications for logged-in student
   useEffect(() => {
     const fetchApplications = async () => {
       if (!user?.email) {
@@ -25,10 +25,11 @@ const MyApplications = () => {
       }
 
       try {
-        const res = await axiosSecure.get(`/applications/student/${user.email}`);
+        // ✅ Corrected Axios URL using query param
+        const res = await axiosSecure.get(`/applications/student?email=${user.email}`);
         const apps = res.data || [];
 
-        // প্রতিটি application এর সাথে scholarship details fetch
+        // Merge scholarship details if needed
         const appsWithDetails = await Promise.all(
           apps.map(async (app) => {
             if (app.scholarshipId) {
@@ -60,6 +61,7 @@ const MyApplications = () => {
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
   if (!user) return <p className="text-center mt-10">Please login to view your applications.</p>;
 
+  // Modal handlers
   const handleOpenDetails = (app) => {
     setSelectedApp(app);
     setShowDetailsModal(true);
@@ -76,26 +78,28 @@ const MyApplications = () => {
     setShowReviewModal(false);
   };
 
+  // Delete application
   const handleDelete = async (id) => {
-  if (!window.confirm("Are you sure you want to delete this application?")) return;
+    if (!window.confirm("Are you sure you want to delete this application?")) return;
 
-  try {
-    const res = await axiosSecure.delete(`/applications/${id}`);
-    if (res.data.success) {
-      setApplications(prev => prev.filter(app => app._id !== id));
-    } else {
-      alert("Failed to delete application");
+    try {
+      const res = await axiosSecure.delete(`/applications/${id}`);
+      if (res.data.success) {
+        setApplications(prev => prev.filter(app => app._id !== id));
+      } else {
+        alert("Failed to delete application");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
     }
-  } catch (err) {
-    console.error("Delete error:", err);
-  }
-};
-
+  };
 
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">My Applications</h2>
-      <div className="overflow-x-auto">
+
+      {/* Table for desktop */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full border">
           <thead className="bg-gray-200">
             <tr>
@@ -120,17 +124,19 @@ const MyApplications = () => {
             {applications.map((app) => (
               <tr key={app._id} className="text-center border">
                 <td className="p-2 border">{app.universityName}</td>
-                <td className="p-2 border">{app.universityCity || "N/A"}</td>
+                <td className="p-2 border">{app.universityCity || app.universityAddress || "N/A"}</td>
                 <td className="p-2 border">{app.subjectCategory || "N/A"}</td>
                 <td className="p-2 border">{app.applicationFeedback || "N/A"}</td>
                 <td className="p-2 border">{app.applicationFees || 0}</td>
                 <td className="p-2 border">{app.applicationStatus}</td>
                 <td className="p-2 border">{app.paymentStatus}</td>
                 <td className="p-2 border flex justify-center items-center space-x-2">
+                  {/* Details */}
                   <button onClick={() => handleOpenDetails(app)} className="text-blue-500 hover:text-blue-700">
                     <FaInfoCircle size={18} />
                   </button>
 
+                  {/* Edit / Pay / Delete if pending */}
                   {app.applicationStatus === "pending" && (
                     <>
                       <button className="text-yellow-500 hover:text-yellow-700">
@@ -142,17 +148,18 @@ const MyApplications = () => {
                           <FaCreditCard size={18} />
                         </button>
                       )}
-                      <button
-  title="Delete"
-  onClick={() => handleDelete(app._id)}
-  className="text-red-500 hover:text-red-700"
->
-  <FaTrash size={18} />
-</button>
 
+                      <button
+                        title="Delete"
+                        onClick={() => handleDelete(app._id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <FaTrash size={18} />
+                      </button>
                     </>
                   )}
 
+                  {/* Add Review if completed */}
                   {app.applicationStatus === "completed" && (
                     <button onClick={() => handleOpenReview(app)} className="text-purple-500 hover:text-purple-700">
                       <FaStar size={18} />
@@ -165,6 +172,54 @@ const MyApplications = () => {
         </table>
       </div>
 
+      {/* Mobile view cards */}
+      <div className="md:hidden space-y-4">
+        {applications.map((app) => (
+          <div key={app._id} className="border p-4 rounded shadow-sm bg-white flex flex-col gap-2">
+            <p><strong>University:</strong> {app.universityName}</p>
+            <p><strong>Address:</strong> {app.universityCity || app.universityAddress || "N/A"}</p>
+            <p><strong>Subject:</strong> {app.subjectCategory || "N/A"}</p>
+            <p><strong>Feedback:</strong> {app.applicationFeedback || "N/A"}</p>
+            <p><strong>Fees:</strong> {app.applicationFees || 0}</p>
+            <p><strong>Status:</strong> {app.applicationStatus}</p>
+            <p><strong>Payment:</strong> {app.paymentStatus}</p>
+            <div className="flex gap-3 mt-2 flex-wrap">
+              <button onClick={() => handleOpenDetails(app)} className="text-blue-500 hover:text-blue-700">
+                <FaInfoCircle size={18} />
+              </button>
+
+              {app.applicationStatus === "pending" && (
+                <>
+                  <button className="text-yellow-500 hover:text-yellow-700">
+                    <FaPencilAlt size={18} />
+                  </button>
+
+                  {app.paymentStatus === "unpaid" && (
+                    <button className="text-green-500 hover:text-green-700">
+                      <FaCreditCard size={18} />
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => handleDelete(app._id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FaTrash size={18} />
+                  </button>
+                </>
+              )}
+
+              {app.applicationStatus === "completed" && (
+                <button onClick={() => handleOpenReview(app)} className="text-purple-500 hover:text-purple-700">
+                  <FaStar size={18} />
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modals */}
       {showDetailsModal && <ApplicationDetailsModal application={selectedApp} onClose={handleCloseModals} />}
       {showReviewModal && <AddReviewModal application={selectedApp} onClose={handleCloseModals} />}
     </div>

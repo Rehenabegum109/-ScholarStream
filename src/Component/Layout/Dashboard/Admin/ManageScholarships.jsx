@@ -1,20 +1,29 @@
 
-import { useState, useEffect } from "react";
-import AxiosSecure from "../../../Hook/AxiosSecore";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { MdDelete, MdEdit } from "react-icons/md";
+import useAxiosSecure from "../../../Hook/useAxiosSecure";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const ManageScholarships = () => {
   const [scholarships, setScholarships] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedScholarship, setSelectedScholarship] = useState(null);
+  const AxiosSecure = useAxiosSecure();
 
   // Fetch all scholarships
   const fetchScholarships = async () => {
     try {
+      setLoading(true);
       const res = await AxiosSecure.get("/scholarships");
-      setScholarships(res.data);
+      const dataArray = Array.isArray(res.data.scholarships)
+        ? res.data.scholarships
+        : [];
+      setScholarships(dataArray);
     } catch (err) {
-      console.error(err);
-      Swal.fire("Error", "Failed to fetch scholarships", "error");
+      console.error("Fetch error:", err);
+      Swal.fire("Error", "Failed to load scholarships", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -22,127 +31,207 @@ const ManageScholarships = () => {
     fetchScholarships();
   }, []);
 
-  // Update Scholarship
-  const handleEdit = (scholarship) => {
-    Swal.fire({
-      title: "Update Scholarship",
-      html: `
-        <input id="scholarshipName" class="swal2-input" placeholder="Scholarship Name" value="${scholarship.scholarshipName}" />
-        <input id="universityName" class="swal2-input" placeholder="University Name" value="${scholarship.universityName}" />
-        <input id="universityCountry" class="swal2-input" placeholder="Country" value="${scholarship.universityCountry}" />
-        <input id="universityCity" class="swal2-input" placeholder="City" value="${scholarship.universityCity}" />
-        <input id="universityWorldRank" type="number" class="swal2-input" placeholder="World Rank" value="${scholarship.universityWorldRank || ""}" />
-        <input id="subjectCategory" class="swal2-input" placeholder="Subject Category" value="${scholarship.subjectCategory}" />
-        <input id="scholarshipCategory" class="swal2-input" placeholder="Scholarship Category" value="${scholarship.scholarshipCategory}" />
-        <input id="degree" class="swal2-input" placeholder="Degree" value="${scholarship.degree}" />
-        <input id="tuitionFees" type="number" class="swal2-input" placeholder="Tuition Fees" value="${scholarship.tuitionFees || ""}" />
-        <input id="applicationFees" type="number" class="swal2-input" placeholder="Application Fees" value="${scholarship.applicationFees}" />
-        <input id="serviceCharge" type="number" class="swal2-input" placeholder="Service Charge" value="${scholarship.serviceCharge}" />
-        <input id="applicationDeadline" type="date" class="swal2-input" placeholder="Application Deadline" value="${scholarship.applicationDeadline ? new Date(scholarship.applicationDeadline).toISOString().split('T')[0] : ""}" />
-        <input id="scholarshipPostDate" type="date" class="swal2-input" placeholder="Post Date" value="${scholarship.scholarshipPostDate ? new Date(scholarship.scholarshipPostDate).toISOString().split('T')[0] : ""}" />
-      `,
-      focusConfirm: false,
-      preConfirm: () => {
-        return {
-          scholarshipName: document.getElementById("scholarshipName").value,
-          universityName: document.getElementById("universityName").value,
-          universityCountry: document.getElementById("universityCountry").value,
-          universityCity: document.getElementById("universityCity").value,
-          universityWorldRank: parseInt(document.getElementById("universityWorldRank").value || 0),
-          subjectCategory: document.getElementById("subjectCategory").value,
-          scholarshipCategory: document.getElementById("scholarshipCategory").value,
-          degree: document.getElementById("degree").value,
-          tuitionFees: parseFloat(document.getElementById("tuitionFees").value || 0),
-          applicationFees: parseFloat(document.getElementById("applicationFees").value),
-          serviceCharge: parseFloat(document.getElementById("serviceCharge").value || 0),
-          applicationDeadline: document.getElementById("applicationDeadline").value,
-          scholarshipPostDate: document.getElementById("scholarshipPostDate").value,
-        };
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const res = await AxiosSecure.patch(`/scholarships/${scholarship._id}`, result.value);
-          if (res.data.success) {
-            Swal.fire("Updated!", "Scholarship updated successfully", "success");
-            fetchScholarships();
-          }
-        } catch (err) {
-          console.error(err);
-          Swal.fire("Error", "Failed to update scholarship", "error");
-        }
-      }
-    });
-  };
-
-  // Delete Scholarship
+  // Delete scholarship
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
-      text: "Do you want to delete this scholarship?",
+      text: "This will delete the scholarship permanently.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, delete it",
+      confirmButtonText: "Yes, delete it!",
     });
 
-    if (confirm.isConfirmed) {
-      try {
-        await AxiosSecure.delete(`/scholarships/${id}`);
-        Swal.fire("Deleted!", "Scholarship has been deleted.", "success");
-        fetchScholarships();
-      } catch (err) {
-        console.error(err);
-        Swal.fire("Error", "Failed to delete scholarship", "error");
-      }
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await AxiosSecure.delete(`/scholarships/${id}`);
+      Swal.fire("Deleted!", "Scholarship has been deleted.", "success");
+      setScholarships((prev) => prev.filter((s) => s._id !== id));
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Failed to delete scholarship", "error");
+    }
+  };
+
+  // Open modal
+  const openUpdateModal = (scholarship) => {
+    setSelectedScholarship({
+      ...scholarship,
+      applicationDeadline: scholarship.applicationDeadline
+        ? new Date(scholarship.applicationDeadline).toISOString().split("T")[0]
+        : "",
+      scholarshipPostDate: scholarship.scholarshipPostDate
+        ? new Date(scholarship.scholarshipPostDate).toISOString().split("T")[0]
+        : "",
+    });
+  };
+
+  const closeModal = () => setSelectedScholarship(null);
+
+  // Handle form input
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedScholarship((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Update scholarship
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { _id, ...updateData } = selectedScholarship;
+
+      // Convert date strings to Date objects
+      if (updateData.applicationDeadline)
+        updateData.applicationDeadline = new Date(updateData.applicationDeadline);
+      if (updateData.scholarshipPostDate)
+        updateData.scholarshipPostDate = new Date(updateData.scholarshipPostDate);
+
+      await AxiosSecure.patch(`/scholarships/${_id}`, updateData);
+      Swal.fire("Success", "Scholarship updated successfully", "success");
+      fetchScholarships();
+      closeModal();
+    } catch (err) {
+      console.error(err.response ? err.response.data : err);
+      Swal.fire("Error", "Failed to update scholarship", "error");
     }
   };
 
   return (
-    <div className="p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-4">Manage Scholarships</h2>
-      <table className="min-w-full border">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border p-2">Name</th>
-            <th className="border p-2">University</th>
-            <th className="border p-2">Category</th>
-            <th className="border p-2">Degree</th>
-            <th className="border p-2">Fees</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {scholarships.map((s) => (
-            <tr key={s._id}>
-              <td className="border p-2">{s.scholarshipName}</td>
-              <td className="border p-2">{s.universityName}</td>
-              <td className="border p-2">{s.scholarshipCategory}</td>
-              <td className="border p-2">{s.degree}</td>
-              <td className="border p-2">${s.applicationFees}</td>
-     
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-6">Manage Scholarships</h1>
 
-<td className="border p-2 space-x-2 flex">
-  <button
-    onClick={() => handleEdit(s)}
-    className="bg-yellow-500 text-white p-2 rounded flex items-center justify-center"
-  >
-    <MdEdit size={20} />
-  </button>
-  <button
-    onClick={() => handleDelete(s._id)}
-    className="bg-red-500 text-white p-2 rounded flex items-center justify-center"
-  >
-    <MdDelete size={20} />
-  </button>
-</td>
-
-
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-300">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 border">Name</th>
+              <th className="px-4 py-2 border">University</th>
+              <th className="px-4 py-2 border">Country</th>
+              <th className="px-4 py-2 border">Deadline</th>
+              <th className="px-4 py-2 border">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {loading
+              ? Array.from({ length: 5 }).map((_, idx) => (
+                  <tr key={idx} className="animate-pulse">
+                    <td className="px-4 py-2 border bg-gray-200">&nbsp;</td>
+                    <td className="px-4 py-2 border bg-gray-200">&nbsp;</td>
+                    <td className="px-4 py-2 border bg-gray-200">&nbsp;</td>
+                    <td className="px-4 py-2 border bg-gray-200">&nbsp;</td>
+                    <td className="px-4 py-2 border bg-gray-200">&nbsp;</td>
+                  </tr>
+                ))
+              : scholarships.length === 0
+              ? (
+                <tr>
+                  <td className="px-4 py-2 border text-center" colSpan={5}>
+                    No scholarships available.
+                  </td>
+                </tr>
+              )
+              : scholarships.map((s) => (
+                  <tr key={s._id} className="text-center">
+                    <td className="px-4 py-2 border">{s.scholarshipName}</td>
+                    <td className="px-4 py-2 border">{s.universityName}</td>
+                    <td className="px-4 py-2 border">{s.universityCountry}</td>
+                    <td className="px-4 py-2 border">
+                      {s.applicationDeadline
+                        ? new Date(s.applicationDeadline).toLocaleDateString()
+                        : "-"}
+                    </td>
+                    <td className="px-4 py-2 border flex justify-center gap-2 flex-wrap">
+                      <button
+                        onClick={() => openUpdateModal(s)}
+                        className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center gap-1"
+                      >
+                        <FaEdit /> Update
+                      </button>
+                      <button
+                        onClick={() => handleDelete(s._id)}
+                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center gap-1"
+                      >
+                        <FaTrash /> Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Update Modal */}
+      {selectedScholarship && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded shadow w-full max-w-lg">
+            <h2 className="text-2xl font-bold mb-4">Update Scholarship</h2>
+            <form onSubmit={handleUpdateSubmit} className="space-y-4">
+              <div>
+                <label className="block font-medium">Scholarship Name</label>
+                <input
+                  type="text"
+                  name="scholarshipName"
+                  value={selectedScholarship.scholarshipName}
+                  onChange={handleChange}
+                  className="w-full border rounded px-3 py-2"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-medium">University Name</label>
+                <input
+                  type="text"
+                  name="universityName"
+                  value={selectedScholarship.universityName}
+                  onChange={handleChange}
+                  className="w-full border rounded px-3 py-2"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-medium">Country</label>
+                <input
+                  type="text"
+                  name="universityCountry"
+                  value={selectedScholarship.universityCountry}
+                  onChange={handleChange}
+                  className="w-full border rounded px-3 py-2"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-medium">Application Deadline</label>
+                <input
+                  type="date"
+                  name="applicationDeadline"
+                  value={selectedScholarship.applicationDeadline}
+                  onChange={handleChange}
+                  className="w-full border rounded px-3 py-2"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 rounded border hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default ManageScholarships;
+
+

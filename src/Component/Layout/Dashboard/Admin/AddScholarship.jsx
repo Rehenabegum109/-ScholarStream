@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import AxiosSecure from "../../../Hook/AxiosSecore";
+import useAxiosSecure from "../../../Hook/useAxiosSecure";
+
 
 const AddScholarship = () => {
+  const AxiosSecure =useAxiosSecure()
   const [formData, setFormData] = useState({
     scholarshipName: "",
     universityName: "",

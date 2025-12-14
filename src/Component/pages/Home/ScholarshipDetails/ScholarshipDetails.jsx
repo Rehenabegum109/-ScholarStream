@@ -82,7 +82,7 @@ const ScholarshipDetails = () => {
 
           <button
             onClick={() => navigate(`/checkout/${id}`)}
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="mt-4 bg-[#1E90FF] text-white font-bold py-2 px-4 rounded"
           >
             Apply for Scholarship
           </button>

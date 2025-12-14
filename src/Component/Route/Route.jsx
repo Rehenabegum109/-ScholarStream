@@ -71,7 +71,6 @@ export const router = createBrowserRouter([
   element: (
     
       <CheckOut />
-  
   )
 },
 {

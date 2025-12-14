@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { FaFacebook, FaInstagram, FaLinkedin, FaGithub } from "react-icons/fa";
-import logo from '../../assets/image/images (1).jpg'
+
 
 const Footer = () => {
   return (
@@ -11,7 +11,7 @@ const Footer = () => {
           
           {/* Logo */}
 
-    <img className="w-[100px]" src={logo} alt="" />
+    <img className="w-[100px]" src='https://w7.pngwing.com/pngs/24/161/png-transparent-greed-scholarship-miscellaneous-angle-logo-thumbnail.png' alt="" />
           {/* Social Icons */}
           <div className="flex gap-4 text-xl">
             <a href="#" className="hover:text-blue-400 transition">
