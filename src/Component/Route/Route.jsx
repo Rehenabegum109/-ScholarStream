@@ -10,7 +10,7 @@ import DashboardLayout from "../Layout/Dashboard/DashboardLayout";
 import StudentDashboard from "../Layout/Dashboard/Student/StudentDashboard";
 import ModeratorDashboard from "../Layout/Dashboard/Moderator/ModeratorDashboard";
 import AdminDashboard from "../Layout/Dashboard/Admin/AdminDashboard";
-import PrivateRoute from "../PrivetRoute/PrivetRout";
+
 import AddScholarship from "../Layout/Dashboard/Admin/AddScholarship";
 import ManageScholarships from "../Layout/Dashboard/Admin/ManageScholarships";
 import MyProfile from "../Layout/Dashboard/Admin/MyProfile";
@@ -23,8 +23,9 @@ import MyReviews from "../Layout/Dashboard/Student/MyReviews";
 import CheckOut from "../pages/Home/Payment/CheckOut";
 import Forbidden from "../Forbidden/Forbidden";
 import PaymentSuccess from "../pages/Home/Payment/PaymentSuccess";
-import PaymentFailure from "../pages/Home/Payment/PaymentFailure";
+
 import DashboardHome from "../Layout/Dashboard/DashboardHome";
+import PaymentCancel from "../pages/Home/Payment/PaymentCancel";
 
 
 
@@ -59,19 +60,12 @@ export const router = createBrowserRouter([
        path: 'scholarship/:id',
         Component:ScholarshipDetails
       },
-      {
      
-  path: 'checkout',
-  element: <CheckOut/>
-
-      },
       
        {
   path: "checkout/:id",
-  element: (
-    
-      <CheckOut />
-  )
+  element:<CheckOut />
+  
 },
 {
       path: "payment-success",
@@ -79,7 +73,7 @@ export const router = createBrowserRouter([
     },
     {
       path: "payment-cancel",
-      element: <PaymentFailure />
+      element: <PaymentCancel />
     },
         
       

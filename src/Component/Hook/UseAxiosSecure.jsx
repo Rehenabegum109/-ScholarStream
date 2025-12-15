@@ -25,17 +25,26 @@ const useAxiosSecure = () => {
     return config;
   });
 
-  // Response interceptor: handle 401/403
   axiosInstance.interceptors.response.use(
-    (res) => res,
-    async (err) => {
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        await logOut();
-        navigate("/login");
-      }
-      return Promise.reject(err);
+  (res) => res,
+  async (err) => {
+    const status = err.response?.status;
+
+    if (status === 401) {
+      
+      await logOut();
+      navigate("/login");
     }
-  );
+
+    if (status === 403) {
+    
+      console.warn("Forbidden access");
+    }
+
+    return Promise.reject(err);
+  }
+);
+
 
   return axiosInstance;
 };

@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { UseAuth } from "../../../Hook/AuthProvider";
 import useAxiosSecure from "../../../Hook/useAxiosSecure";
+import { motion } from "framer-motion";
 
 const CheckOut = () => {
   const { id } = useParams();
@@ -30,16 +31,13 @@ const CheckOut = () => {
         const res = await AxiosSecure.get(`/applications/check`, {
           params: {
             scholarshipId: scholarship._id,
-            studentEmail: user.email
-          }
+            studentEmail: user.email,
+          },
         });
         if (res.data.applied) setAlreadyApplied(true);
       } catch (err) {
-        if (err.response?.status === 404) {
-          setAlreadyApplied(false); // Not applied yet
-        } else {
-          console.error(err);
-        }
+        setAlreadyApplied(false);
+        console.error(err);
       }
     };
 
@@ -47,7 +45,8 @@ const CheckOut = () => {
   }, [user, scholarship, AxiosSecure]);
 
   const handleApply = async () => {
-    if (!scholarship || !user) return;
+    if (!user || !scholarship) return;
+
     if (alreadyApplied) {
       alert("You have already applied for this scholarship!");
       return;
@@ -60,19 +59,18 @@ const CheckOut = () => {
       const appRes = await AxiosSecure.post("/applications", {
         scholarshipId: scholarship._id,
         studentEmail: user.email,
-        paymentStatus: "unpaid"
+        paymentStatus: "unpaid",
       });
 
       const applicationId = appRes.data.insertedId;
-
-      setAlreadyApplied(true); // button update
+      setAlreadyApplied(true); 
 
       // 2️⃣ If fee > 0, create Stripe session
       if (scholarship.applicationFees > 0) {
         const stripeRes = await AxiosSecure.post("/create-checkout-session", {
           scholarshipId: scholarship._id,
           applicationId,
-          amount: scholarship.applicationFees
+          amount: scholarship.applicationFees,
         });
 
         if (stripeRes.data.url) window.location.href = stripeRes.data.url;
@@ -81,17 +79,24 @@ const CheckOut = () => {
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong. Please try again.");
+      const msg =
+        err.response?.data?.message || "Something went wrong. Please try again.";
+      alert(msg);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (!scholarship) return <div>Scholarship not found!</div>;
+  if (isLoading) return <div className="text-center mt-10">Loading...</div>;
+  if (!scholarship) return <div className="text-center mt-10">Scholarship not found!</div>;
 
   return (
-    <div className="p-6 max-w-5xl mx-auto bg-white shadow rounded flex flex-col md:flex-row gap-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="p-6 max-w-5xl mx-auto bg-white shadow rounded flex flex-col md:flex-row gap-6"
+    >
       {/* Left Side */}
       <div className="flex-1 border p-4 rounded space-y-3">
         <h2 className="text-xl font-bold">{scholarship.scholarshipName}</h2>
@@ -103,19 +108,24 @@ const CheckOut = () => {
 
       {/* Right Side */}
       <div className="w-full md:w-80 border p-4 rounded space-y-3 text-center">
-        <img src={scholarship.universityImage} alt={scholarship.universityName} className="w-full h-40 object-cover rounded mb-3" />
+        <img
+          src={scholarship.universityImage}
+          alt={scholarship.universityName}
+          className="w-full h-40 object-cover rounded mb-3"
+        />
         <h3 className="text-lg font-semibold">{scholarship.universityName}</h3>
         <p><strong>Application Fee:</strong> ${scholarship.applicationFees}</p>
 
         <button
           onClick={handleApply}
-          className="w-full bg-blue-600 text-white py-2 rounded mt-4 hover:bg-blue-700"
-          disabled={isProcessing || alreadyApplied}
+          className={`w-full py-2 rounded mt-4 font-bold ${
+            alreadyApplied ? "bg-gray-400 text-white" : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
         >
           {alreadyApplied ? "Already Applied" : isProcessing ? "Processing..." : "Apply Now"}
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

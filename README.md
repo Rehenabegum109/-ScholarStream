@@ -1,16 +1,57 @@
-# React + Vite
+# Scholarship Application Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Purpose
+This project allows students to explore scholarships, apply securely, pay application fees via Stripe, track application status, and submit feedback. It provides an easy-to-use dashboard for both students and admin management.
 
-Currently, two official plugins are available:
+## Live URL
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## React Compiler
+## Key Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Student Features
+- Register and login securely
+- Browse scholarships by university, country, category, and degree
+- Apply for scholarships with application fee payment
+- Stripe payment integration with success, failure, and cancellation handling
+- Dashboard to view all applications with status and payment information
+- Edit or delete pending applications
+- Retry payment for unpaid applications
+- Submit reviews/feedback for completed applications
+- Responsive UI for desktop and mobile devices
+- Notifications on payment status and application updates
 
-## Expanding the ESLint configuration
+### Admin Features
+- Manage scholarships (add, edit, delete)
+- View all student applications
+- Approve or reject applications
+- View student feedback and reviews
+- Monitor payment transactions
+- Dashboard analytics for applications and payments
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Extra Features
+- Animated UI components using Framer Motion
+- SweetAlert2 notifications for alerts and confirmations
+- Role-based authentication (student/admin)
+- Server-side validation for secure data handling
+- MongoDB for persistent data storage
+- Cross-origin request handling with CORS
+
+## NPM Packages Used
+- `react` – Frontend UI library
+- `react-router-dom` – Routing
+- `axios` – HTTP requests
+- `sweetalert2` – Alerts and notifications
+- `react-icons` – Icons for UI elements
+- `framer-motion` – Animations
+- `stripe` – Stripe payment integration
+- `mongodb` – Database
+- `cors` – Cross-Origin requests handling
+- `express` – Backend server
+- `dotenv` – Environment variable management
+- `jsonwebtoken` – Authentication
+
+## Setup Instructions
+1. Clone the repository:
+     ```bash
+   git clone https://github.com/Rehenabegum109/-ScholarStream.git
+   cd -ScholarStream
