@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import useAxiosSecure from "../../../Hook/useAxiosSecure";
+
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../../Hook/UseAxiosSecure";
 
 const PaymentCancel = () => {
   const [searchParams] = useSearchParams();

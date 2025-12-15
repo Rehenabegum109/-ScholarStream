@@ -8,7 +8,8 @@ const MyReviews = () => {
   const [editingReview, setEditingReview] = useState(null);
   const [newComment, setNewComment] = useState("");
   const [newRating, setNewRating] = useState(1);
-const AxiosSecure =useAxiosSecure()
+  const AxiosSecure = useAxiosSecure();
+
   // Fetch reviews
   useEffect(() => {
     const fetchReviews = async () => {
@@ -22,9 +23,9 @@ const AxiosSecure =useAxiosSecure()
       }
     };
     fetchReviews();
-  }, []);
+  }, [AxiosSecure]);
 
-  // Handle edit button click
+  // Handle edit
   const handleEdit = (review) => {
     setEditingReview(review);
     setNewComment(review.reviewComment);
@@ -34,12 +35,10 @@ const AxiosSecure =useAxiosSecure()
   // Handle update
   const handleUpdate = async () => {
     try {
-      const res = await AxiosSecure.patch(`/reviews/${editingReview._id}`, {
+      await AxiosSecure.patch(`/reviews/${editingReview._id}`, {
         reviewComment: newComment,
         ratingPoint: newRating,
       });
-
-      // Update local state
       setReviews((prev) =>
         prev.map((r) =>
           r._id === editingReview._id
@@ -47,7 +46,6 @@ const AxiosSecure =useAxiosSecure()
             : r
         )
       );
-
       setEditingReview(null);
     } catch (err) {
       console.error("Update failed", err);
@@ -64,57 +62,77 @@ const AxiosSecure =useAxiosSecure()
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return <p className="text-center mt-6 text-blue-600 font-semibold">Loading...</p>;
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full table-auto border">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border p-2">Scholarship Name</th>
-            <th className="border p-2">University Name</th>
-            <th className="border p-2">Comment</th>
-            <th className="border p-2">Date</th>
-            <th className="border p-2">Rating</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reviews.map((review) => (
-            <tr key={review._id} className="text-center">
-              <td className="border p-2">{review.scholarshipName}</td>
-              <td className="border p-2">{review.universityName}</td>
-              <td className="border p-2">{review.reviewComment}</td>
-              <td className="border p-2">
-                {new Date(review.reviewDate).toLocaleDateString()}
-              </td>
-              <td className="border p-2">{review.ratingPoint} ⭐</td>
-              <td className="border p-2 space-x-2 flex justify-center">
-                <button
-                  onClick={() => handleEdit(review)}
-                  className="text-yellow-500 hover:text-yellow-700"
-                >
+    <div className="p-4">
+      {/* Desktop Table */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="min-w-full border border-gray-200">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border p-2 text-left">Scholarship Name</th>
+              <th className="border p-2 text-left">University Name</th>
+              <th className="border p-2 text-left">Comment</th>
+              <th className="border p-2 text-left">Date</th>
+              <th className="border p-2 text-left">Rating</th>
+              <th className="border p-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reviews.map((review) => (
+              <tr key={review._id} className="text-center md:text-left">
+                <td className="border p-2">{review.scholarshipName}</td>
+                <td className="border p-2">{review.universityName}</td>
+                <td className="border p-2">{review.reviewComment}</td>
+                <td className="border p-2">{new Date(review.reviewDate).toLocaleDateString()}</td>
+                <td className="border p-2">{review.ratingPoint} ⭐</td>
+                <td className="border p-2 flex justify-center md:justify-start gap-2">
+                  <button onClick={() => handleEdit(review)} className="text-yellow-500 hover:text-yellow-700">
+                    <FaEdit size={18} />
+                  </button>
+                  <button onClick={() => handleDelete(review._id)} className="text-red-500 hover:text-red-700">
+                    <FaTrash size={18} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden flex flex-col gap-4">
+        {reviews.map((review) => (
+          <div key={review._id} className="border rounded shadow p-4 bg-white flex flex-col gap-2">
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-lg">{review.scholarshipName}</h3>
+              <div className="flex gap-2">
+                <button onClick={() => handleEdit(review)} className="text-yellow-500 hover:text-yellow-700">
                   <FaEdit size={18} />
                 </button>
-                <button
-                  onClick={() => handleDelete(review._id)}
-                  className="text-red-500 hover:text-red-700"
-                >
+                <button onClick={() => handleDelete(review._id)} className="text-red-500 hover:text-red-700">
                   <FaTrash size={18} />
                 </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </div>
+            </div>
+            <p className="text-gray-700">{review.reviewComment}</p>
+            <p className="text-sm text-gray-500">
+              {review.universityName} | {new Date(review.reviewDate).toLocaleDateString()} | {review.ratingPoint} ⭐
+            </p>
+          </div>
+        ))}
+      </div>
 
       {/* Edit Modal */}
       {editingReview && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded shadow-lg w-full max-w-md p-6">
             <h2 className="text-xl font-bold mb-4">Edit Review</h2>
             <textarea
-              className="w-full border p-2 mb-3 rounded"
+              className="w-full border p-2 mb-3 rounded resize-none"
+              rows={4}
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
             />
@@ -126,7 +144,7 @@ const AxiosSecure =useAxiosSecure()
               value={newRating}
               onChange={(e) => setNewRating(Number(e.target.value))}
             />
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-end gap-2">
               <button
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
                 onClick={() => setEditingReview(null)}

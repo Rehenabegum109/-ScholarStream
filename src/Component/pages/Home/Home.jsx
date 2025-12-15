@@ -22,7 +22,7 @@ const Home = () => {
       setLoading(true);
       try {
         const res = await AxiosSecure.get("/scholarships");
-        // Ensure it's always an array to avoid sort/filter errors
+      
         const data = Array.isArray(res.data) ? res.data : res.data.scholarships ?? [];
         setAllScholarshipsData(data);
       } catch (err) {
@@ -35,13 +35,13 @@ const Home = () => {
     fetchScholarships();
   }, []);
 
-  // Top Scholarships Section (safe)
+  
   let topScholarships = Array.isArray(allScholarshipsData) ? allScholarshipsData : [];
 
-  // Sort by fee
+
   topScholarships.sort((a, b) => (Number(a.fee || 0) - Number(b.fee || 0)));
 
-  // Limit to 6
+  
   topScholarships = topScholarships.slice(0, 6);
 
   return (

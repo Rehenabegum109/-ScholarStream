@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { UseAuth } from "./AuthProvider";
 
 const useAxiosSecure = () => {
@@ -8,10 +8,10 @@ const useAxiosSecure = () => {
   const navigate = useNavigate();
 
   const axiosInstance = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: "https://scholarships-server-kappa.vercel.app",
   });
 
-  // Request interceptor: attach Firebase token
+  
   axiosInstance.interceptors.request.use(async (config) => {
     if (user) {
       try {

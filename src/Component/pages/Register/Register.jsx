@@ -49,7 +49,7 @@ const Register = () => {
       await updateUserProfile(name, photo);
 
       // 3️⃣ Save user to MongoDB
-      await axios.post("http://localhost:3000/users", {
+      await axios.post("https://scholarships-server-kappa.vercel.app/users", {
         name,
         email,
         photo,

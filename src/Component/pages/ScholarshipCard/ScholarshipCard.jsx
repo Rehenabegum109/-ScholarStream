@@ -12,7 +12,7 @@ const ScholarshipCard = ({ scholarship }) => {
       />
 
       <div className="p-4 flex-1 flex flex-col justify-between">
-        {/* Info */}
+        
         <div className="space-y-2">
           <h2 className="text-xl font-semibold">{scholarship.universityName}</h2>
           <p>

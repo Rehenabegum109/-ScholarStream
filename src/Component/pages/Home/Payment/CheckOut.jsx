@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { UseAuth } from "../../../Hook/AuthProvider";
-import useAxiosSecure from "../../../Hook/useAxiosSecure";
+
 import { motion } from "framer-motion";
+import useAxiosSecure from "../../../Hook/UseAxiosSecure";
 
 const CheckOut = () => {
   const { id } = useParams();
@@ -55,7 +56,7 @@ const CheckOut = () => {
     setIsProcessing(true);
 
     try {
-      // 1️⃣ Save application (initially unpaid)
+      
       const appRes = await AxiosSecure.post("/applications", {
         scholarshipId: scholarship._id,
         studentEmail: user.email,

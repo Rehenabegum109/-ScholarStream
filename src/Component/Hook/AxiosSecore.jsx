@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const AxiosSecure = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: `https://scholarships-server-kappa.vercel.app`,
 });
 
 export default AxiosSecure;

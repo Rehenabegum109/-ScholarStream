@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import useAxiosSecure from "../../../Hook/UseAxiosSecure";
+
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import useAxiosSecure from "../../../Hook/useAxiosSecure";
 
 const Analytics = () => {
   const AxiosSecure = useAxiosSecure();
@@ -8,7 +9,7 @@ const Analytics = () => {
   const [totalScholarships, setTotalScholarships] = useState(0);
   const [totalFees, setTotalFees] = useState(0);
   const [applicationsData, setApplicationsData] = useState([]);
-  const [chartType, setChartType] = useState("university"); // "university" or "category"
+  const [chartType, setChartType] = useState("university"); 
 
   useEffect(() => {
     fetchAnalyticsData();

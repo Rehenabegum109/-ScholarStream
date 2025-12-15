@@ -1,4 +1,4 @@
-// components/Shared/SkeletonCard.jsx
+
 import React from "react";
 
 const Skeleton = () => {

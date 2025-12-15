@@ -28,7 +28,7 @@ const AddReviewModal = ({ application, onClose, fetchApplications }) => {
 
       if (res.data.success) {
         Swal.fire("Success", "Review submitted successfully", "success");
-        fetchApplications(); // Refresh applications to reflect review
+        fetchApplications(); 
         onClose();
       } else {
         Swal.fire("Error", "Failed to submit review", "error");
