@@ -1,5 +1,6 @@
 # Scholarship Application Portal
 sever site :https://scholarships-server-kappa.vercel.app
+client site Live :https://stellar-panda-a9ac66.netlify.app
 ## Purpose
 This project allows students to explore scholarships, apply securely, pay application fees via Stripe, track application status, and submit feedback. It provides an easy-to-use dashboard for both students and admin management.
 
