@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
-import { FcGoogle } from "react-icons/fc"; 
-import { FaEye, FaEyeSlash } from "react-icons/fa"; 
+import { useNavigate } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc"; // correct Google icon
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // for password toggle
 import { UseAuth } from "../Hook/AuthProvider";
 
 const LoginPage = () => {
@@ -71,20 +71,20 @@ const LoginPage = () => {
             </span>
           </div>
 
-          <button
-            type="submit"
-            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-          >
-            Login
-          </button>
-        </form>
+       <button
+  type="submit"
+  className="w-full bg-blue-600 text-white py-2 rounded"
+>
+  Login
+</button>
+</form>
+<button
+  onClick={handleGoogleLogin}
+  className="w-full flex items-center justify-center gap-2 border py-2 rounded hover:bg-gray-100"
+>
+  <FcGoogle size={20} /> Login with Google
+</button>
 
-        <button
-          onClick={handleGoogleLogin}
-          className="flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded w-full hover:bg-red-600"
-        >
-          <FcGoogle size={20} /> Login with Google
-        </button>
 
         <p className="mt-4 text-center text-sm">
           Don't have an account? <a href="/register" className="text-blue-500">Register</a>
