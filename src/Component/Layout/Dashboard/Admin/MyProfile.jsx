@@ -1,5 +1,3 @@
-
-
 import { UseAuth } from "../../../Hook/AuthProvider";
 import useRole from "../../Rool/useRole";
 
@@ -15,7 +13,7 @@ const MyProfile = () => {
 
   return (
     <div className="p-4 md:p-6 flex justify-center">
-      <div className="w-full max-w-md bg-white border rounded-xl shadow-md p-6">
+      <div className="w-full max-w-md bg-white text-black border rounded-xl shadow-md p-6">
 
         {/* Profile Image */}
         <div className="flex justify-center mb-4">

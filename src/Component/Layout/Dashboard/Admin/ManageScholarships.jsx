@@ -93,7 +93,7 @@ const ManageScholarships = () => {
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center md:text-left">
+      <h1 className="text-2xl md:text-3xl text-black font-bold mb-6 text-center md:text-left">
         Manage Scholarships
       </h1>
 

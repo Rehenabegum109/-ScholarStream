@@ -26,6 +26,9 @@ import PaymentSuccess from "../pages/Home/Payment/PaymentSuccess";
 
 import DashboardHome from "../Layout/Dashboard/DashboardHome";
 import PaymentCancel from "../pages/Home/Payment/PaymentCancel";
+import AboutSection from "../AboutSection/AboutSection";
+import ResourcesSection from "../pages/Resources/Resources";
+import HelpPage from "../pages/Help/Help";
 
 
 
@@ -50,6 +53,18 @@ export const router = createBrowserRouter([
       {
         path:'register',
         Component:Register
+      },
+      {
+        path:'about',
+        element:<AboutSection/>
+      },
+      {
+        path:'resources',
+        element:<ResourcesSection/>
+      },
+      {
+        path:'help',
+        element:<HelpPage/>
       }
       ,
       {

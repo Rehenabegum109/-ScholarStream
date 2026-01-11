@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { UseAuth } from "../../Hook/AuthProvider";
-import axios from "axios";
+import useAxiosSecure from "../../Hook/UseAxiosSecure";
+
 
 const Register = () => {
   const { registerUser, updateUserProfile } = UseAuth();
   const navigate = useNavigate();
+  const axiosSecure =useAxiosSecure()
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,7 +35,7 @@ const Register = () => {
     const email = form.email.value;
     const password = form.password.value;
 
-    // Password Validation
+    
     const passwordError = validatePassword(password);
     if (passwordError) {
       setError(passwordError);
@@ -42,14 +44,15 @@ const Register = () => {
     }
 
     try {
-      // 1️⃣ Register user with Firebase Auth
+    
       await registerUser(email, password);
 
-      // 2️⃣ Update Firebase profile
+     
       await updateUserProfile(name, photo);
 
-      // 3️⃣ Save user to MongoDB
-      await axios.post("https://scholarships-server-kappa.vercel.app/users", {
+    
+     
+       await axiosSecure.post("/users", {
         name,
         email,
         photo,

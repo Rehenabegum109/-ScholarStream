@@ -9,6 +9,11 @@ import AxiosSecure from "../../Hook/AxiosSecore";
 import ScholarshipCard from "../ScholarshipCard/ScholarshipCard";
 import Skeleton from "../../Skeleton/Skeleton";
 import FAQSection from "./FaqSection";
+import FeaturesSection from "../Features";
+import StatsSection from "../StatesSection";
+import TestimonialsSection from "../Testimonials";
+import BlogSection from "../Blog";
+import NewsletterSection from "../NewsletterSection";
 
 
 
@@ -47,17 +52,8 @@ const Home = () => {
   return (
     <div className="min-h-screen">
 
-      {/* Banner Section */}
+      
       <Banner />
-
-      {/* Hero / Intro Section */}
-      <section className="bg-blue-100 p-8 text-center">
-        <h1 className="text-4xl font-bold text-blue-900 mb-4">Find Your Perfect Scholarship</h1>
-        <p className="text-blue-800 mb-6">Explore thousands of scholarships worldwide.</p>
-        <button className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
-          Explore Scholarships
-        </button>
-      </section>
 
       {/* Top Scholarships Section */}
       <section className="max-w-7xl mx-auto py-16 px-6">
@@ -87,6 +83,7 @@ const Home = () => {
     
       
       <CategoriesSection />
+       <FeaturesSection/>
       
 
       {/* Success Stories / Testimonials Section */}
@@ -105,8 +102,11 @@ const Home = () => {
           </div>
         </motion.div>
       </section>
-
+        <BlogSection/>
       <FAQSection/>
+      <TestimonialsSection/>
+      <StatsSection/>
+      <NewsletterSection/>
 
     </div>
   );

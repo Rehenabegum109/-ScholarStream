@@ -4,7 +4,7 @@ import { Link } from "react-router";
 const ScholarshipCard = ({ scholarship }) => {
   return (
     <div className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition flex flex-col">
-      {/* University Image */}
+      
       <img
         src={scholarship.universityImage}
         alt={scholarship.universityName}

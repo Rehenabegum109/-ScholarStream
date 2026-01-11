@@ -8,7 +8,8 @@ const useAxiosSecure = () => {
   const navigate = useNavigate();
 
   const axiosInstance = axios.create({
-    baseURL: "https://scholarships-server-kappa.vercel.app",
+    // baseURL: "https://scholarships-server-kappa.vercel.app",
+    baseURL: "http://localhost:3000",
   });
 
   
@@ -50,3 +51,55 @@ const useAxiosSecure = () => {
 };
 
 export default useAxiosSecure;
+
+
+// import axios from "axios";
+// import { useNavigate } from "react-router";
+// import { UseAuth } from "./AuthProvider";
+
+// const useAxiosSecure = () => {
+//   const { user, logOut } = UseAuth();
+//   const navigate = useNavigate();
+
+//   const axiosInstance = axios.create({
+//     baseURL: "http://localhost:3000",
+//     withCredentials: true, 
+//   });
+
+//   axiosInstance.interceptors.request.use(async (config) => {
+//     if (user?.email) {
+//       try {
+//         const token = await user.getIdToken(true);
+//         console.log("Sending token:", token);
+//         config.headers.Authorization = `Bearer ${token}`;
+//       } catch (err) {
+//         console.error("Failed to get token:", err);
+//       }
+//     }
+//     return config;
+//   });
+
+//   axiosInstance.interceptors.response.use(
+//     (res) => res,
+//     async (err) => {
+//       const status = err.response?.status;
+
+//       if (status === 401) {
+//         console.warn("Unauthorized! Logging out...");
+//         await logOut();
+//         navigate("/login");
+//       }
+
+//       if (status === 403) {
+//         console.warn("Forbidden access!");
+//       }
+
+//       return Promise.reject(err);
+//     }
+//   );
+
+//   return axiosInstance;
+// };
+
+// export default useAxiosSecure;
+

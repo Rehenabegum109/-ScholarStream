@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import SearchFilter from "../SearchFilter/SearchFilter";
 import ScholarshipCard from "../ScholarshipCard/ScholarshipCard";
@@ -95,8 +94,8 @@ const AllScholarship = () => {
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-16">
-      <h1 className="text-3xl font-bold mb-6 text-center">All Scholarships</h1>
+    <div className="max-w-7xl text-black mx-auto px-6 py-16">
+      <h1 className="text-3xl text-blue-700 font-bold mb-6 text-center">All Scholarships</h1>
 
       {/* Search + Filters */}
       <SearchFilter
@@ -146,3 +145,4 @@ const AllScholarship = () => {
 };
 
 export default AllScholarship;
+

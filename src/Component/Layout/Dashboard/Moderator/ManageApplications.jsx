@@ -1,24 +1,23 @@
 import { useEffect, useState } from "react";
-import AxiosSecure from "../../../Hook/AxiosSecore";
-import Swal from "sweetalert2";
-import { FaRegCommentDots, FaSpinner, FaTimes } from "react-icons/fa";
-import { MdOutlineDoneAll } from "react-icons/md";
+import { FaRegCommentDots, FaInfoCircle, FaSpinner } from "react-icons/fa";
+import { MdOutlineDoneAll, MdCancel } from "react-icons/md";
 import useAxiosSecure from "../../../Hook/useAxiosSecure";
 
 const ManageApplications = () => {
+  const axiosSecure = useAxiosSecure();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const AxiosSecure = useAxiosSecure(); 
+  const [feedbackText, setFeedbackText] = useState("");
+  const [selectedFeedbackId, setSelectedFeedbackId] = useState(null);
+  const [detailsId, setDetailsId] = useState(null);
 
   // Fetch applications
   const fetchApplications = async () => {
     try {
-      setLoading(true);
-      const res = await AxiosSecure.get("/applications"); 
+      const res = await axiosSecure.get("/applications/moderator");
       setApplications(res.data);
     } catch (err) {
-      console.error("Failed to fetch applications", err);
-      Swal.fire("Error", "Failed to load applications", "error");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -28,164 +27,185 @@ const ManageApplications = () => {
     fetchApplications();
   }, []);
 
+  // Submit feedback
+  const handleFeedback = async () => {
+    if (!feedbackText) return alert("Feedback is required");
+
+    await axiosSecure.patch(`/applications/${selectedFeedbackId}/feedback`, {
+      feedback: feedbackText,
+    });
+
+    setFeedbackText("");
+    setSelectedFeedbackId(null);
+    fetchApplications();
+  };
+
   // Status update
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      await AxiosSecure.patch(`/applications/${id}`, { status: newStatus });
-      Swal.fire("Success", "Status updated", "success");
-      fetchApplications();
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error", "Failed to update status", "error");
-    }
+  const handleStatusChange = async (id, status) => {
+    await axiosSecure.patch(`/applications/${id}`, { status });
+    fetchApplications();
   };
 
-  // Feedback
-  const handleFeedback = async (id) => {
-    const { value: feedback } = await Swal.fire({
-      title: "Enter feedback",
-      input: "textarea",
-      inputPlaceholder: "Write feedback here...",
-      showCancelButton: true,
-    });
+  // Reject application
+  const handleReject = async (id) => {
+    const confirm = window.confirm("Reject this application?");
+    if (!confirm) return;
 
-    if (feedback) {
-      try {
-        await AxiosSecure.patch(`/applications/${id}`, { feedback });
-        Swal.fire("Success", "Feedback updated", "success");
-        fetchApplications();
-      } catch (err) {
-        console.error(err);
-        Swal.fire("Error", "Failed to update feedback", "error");
-      }
-    }
+    await axiosSecure.patch(`/applications/${id}/reject`);
+    fetchApplications();
   };
 
-  // Cancel / Reject
-  const handleCancel = async (id) => {
-    const confirm = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to reject this application?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, reject",
-    });
-
-    if (confirm.isConfirmed) {
-      try {
-        await AxiosSecure.patch(`/applications/${id}`, { status: "rejected" });
-        Swal.fire("Rejected!", "Application has been rejected.", "success");
-        fetchApplications();
-      } catch (err) {
-        console.error(err);
-        Swal.fire("Error", "Failed to reject application", "error");
-      }
-    }
-  };
-
-  if (loading) return <div className="p-6 text-center">Loading...</div>;
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="p-4 sm:p-6 bg-white rounded shadow">
-      <h2 className="text-2xl sm:text-3xl font-bold mb-4">Manage Applications</h2>
+    <div className="p-6  text-black">
+      <h2 className="text-2xl font-bold mb-4">Manage Applied Applications</h2>
 
-      {/* Desktop / Tablet Table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="min-w-full border text-sm sm:text-base">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Applicant Name</th>
-              <th className="border p-2">Email</th>
-              <th className="border p-2">University</th>
-              <th className="border p-2">Scholarship</th>
-              <th className="border p-2">Feedback</th>
-              <th className="border p-2">Status</th>
-              <th className="border p-2">Payment</th>
-              <th className="border p-2">Actions</th>
+      <table className="w-full border-collapse border text-center">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border p-2">Applicant Name</th>
+            <th className="border p-2">Email</th>
+            <th className="border p-2">University</th>
+            <th className="border p-2">Feedback</th>
+            <th className="border p-2">Status</th>
+            <th className="border p-2">Payment</th>
+            <th className="border p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {applications.map((app) => (
+            <tr key={app._id} className="border-t">
+              <td className="border p-2">{app.studentName}</td>
+              <td className="border p-2 break-all">{app.studentEmail}</td>
+              <td className="border p-2">{app.universityName}</td>
+              <td className="border p-2">{app.applicationFeedback || "—"}</td>
+              <td className="border p-2">
+                <span
+                  className={`px-2 py-1 rounded text-white ${
+                    app.applicationStatus === "rejected"
+                      ? "bg-red-500"
+                      : app.applicationStatus === "completed"
+                      ? "bg-green-500"
+                      : "bg-yellow-500"
+                  }`}
+                >
+                  {app.applicationStatus}
+                </span>
+              </td>
+              <td className="border p-2">
+                <span
+                  className={`px-2 py-1 rounded text-white ${
+                    app.paymentStatus === "paid" ? "bg-green-500" : "bg-gray-500"
+                  }`}
+                >
+                  {app.paymentStatus || "pending"}
+                </span>
+              </td>
+              <td className="border p-2 flex justify-center gap-2 flex-wrap">
+                {/* Details */}
+                <button
+                  onClick={() => setDetailsId(app._id)}
+                  className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  title="View Details"
+                >
+                  <FaInfoCircle />
+                </button>
+                {/* Feedback */}
+                <button
+                  onClick={() => setSelectedFeedbackId(app._id)}
+                  className="p-2 bg-indigo-500 text-white rounded hover:bg-indigo-600"
+                  title="Give Feedback"
+                >
+                  <FaRegCommentDots />
+                </button>
+                {/* Status */}
+                <button
+                  onClick={() => handleStatusChange(app._id, "processing")}
+                  className="p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                  title="Set Processing"
+                >
+                  <FaSpinner />
+                </button>
+                <button
+                  onClick={() => handleStatusChange(app._id, "completed")}
+                  className="p-2 bg-green-500 text-white rounded hover:bg-green-600"
+                  title="Set Completed"
+                >
+                  <MdOutlineDoneAll />
+                </button>
+                {/* Cancel */}
+                <button
+                  onClick={() => handleReject(app._id)}
+                  className="p-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  title="Reject Application"
+                >
+                  <MdCancel />
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {applications.map((app) => (
-              <tr key={app._id} className="text-center">
-                <td className="border p-2">{app.studentName || "N/A"}</td>
-                <td className="border p-2 break-all">{app.studentEmail}</td>
-                <td className="border p-2">{app.universityName}</td>
-                <td className="border p-2">{app.scholarshipName || "-"}</td>
-                <td className="border p-2">{app.applicationFeedback || "-"}</td>
-                <td className="border p-2">{app.applicationStatus}</td>
-                <td className="border p-2">{app.paymentStatus}</td>
-                <td className="border p-2 flex flex-wrap justify-center gap-2">
-                  <button
-                    onClick={() => handleFeedback(app._id)}
-                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                  >
-                    <FaRegCommentDots />
-                  </button>
-                  <button
-                    onClick={() => handleStatusChange(app._id, "processing")}
-                    className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600"
-                  >
-                    <FaSpinner />
-                  </button>
-                  <button
-                    onClick={() => handleStatusChange(app._id, "completed")}
-                    className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
-                  >
-                    <MdOutlineDoneAll />
-                  </button>
-                  <button
-                    onClick={() => handleCancel(app._id)}
-                    className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
-                  >
-                    <FaTimes />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
 
-      {/* Mobile Card Layout */}
-      <div className="md:hidden space-y-4">
-        {applications.map((app) => (
-          <div key={app._id} className="border rounded-lg p-4 shadow-sm">
-            <p className="font-semibold">{app.studentName || "N/A"}</p>
-            <p className="text-sm break-all text-gray-600">{app.studentEmail}</p>
-            <p className="text-sm"><span className="font-medium">University:</span> {app.universityName}</p>
-            <p className="text-sm"><span className="font-medium">Scholarship:</span> {app.scholarshipName || "-"}</p>
-            <p className="text-sm"><span className="font-medium">Feedback:</span> {app.applicationFeedback || "-"}</p>
-            <p className="text-sm"><span className="font-medium">Status:</span> {app.applicationStatus}</p>
-            <p className="text-sm"><span className="font-medium">Payment:</span> {app.paymentStatus}</p>
-            <div className="flex flex-wrap gap-2 mt-2">
+      {/* Feedback Modal */}
+      {selectedFeedbackId && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="bg-white p-4 rounded w-96">
+            <h3 className="font-bold mb-2">Give Feedback</h3>
+            <textarea
+              className="w-full border p-2"
+              rows="4"
+              value={feedbackText}
+              onChange={(e) => setFeedbackText(e.target.value)}
+            />
+            <div className="flex justify-end mt-3 space-x-2">
               <button
-                onClick={() => handleFeedback(app._id)}
-                className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                onClick={() => setSelectedFeedbackId(null)}
+                className="px-3 py-1 bg-gray-300 rounded"
               >
-                <FaRegCommentDots />
+                Cancel
               </button>
               <button
-                onClick={() => handleStatusChange(app._id, "processing")}
-                className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600"
+                onClick={handleFeedback}
+                className="px-3 py-1 bg-green-600 text-white rounded"
               >
-                <FaSpinner />
-              </button>
-              <button
-                onClick={() => handleStatusChange(app._id, "completed")}
-                className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
-              >
-                <MdOutlineDoneAll />
-              </button>
-              <button
-                onClick={() => handleCancel(app._id)}
-                className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
-              >
-                <FaTimes />
+                Submit
               </button>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {/* Details Modal */}
+      {detailsId && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="bg-white p-4 rounded w-96 max-h-[80vh] overflow-y-auto">
+            <h3 className="font-bold mb-2">Application Details</h3>
+            {applications
+              .filter((app) => app._id === detailsId)
+              .map((app) => (
+                <div key={app._id} className="space-y-1 text-sm">
+                  <p><strong>Name:</strong> {app.studentName}</p>
+                  <p><strong>Email:</strong> {app.studentEmail}</p>
+                  <p><strong>University:</strong> {app.universityName}</p>
+                  <p><strong>Scholarship:</strong> {app.scholarshipName || "—"}</p>
+                  <p><strong>Feedback:</strong> {app.applicationFeedback || "—"}</p>
+                  <p><strong>Status:</strong> {app.applicationStatus}</p>
+                  <p><strong>Payment:</strong> {app.paymentStatus || "pending"}</p>
+                </div>
+              ))}
+            <div className="flex justify-end mt-3">
+              <button
+                onClick={() => setDetailsId(null)}
+                className="px-3 py-1 bg-gray-300 rounded"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

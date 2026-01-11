@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc"; // correct Google icon
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // for password toggle
+import { useNavigate } from "react-router";
+import { FcGoogle } from "react-icons/fc"; 
+import { FaEye, FaEyeSlash } from "react-icons/fa"; 
 import { UseAuth } from "../Hook/AuthProvider";
 
 const LoginPage = () => {
@@ -43,16 +43,16 @@ const LoginPage = () => {
   return (
     <div className="flex items-center justify-center h-screen bg-[#E8F1FF]">
       <div className="bg-white p-8 rounded shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+             <h2 className="text-2xl font-bold text-blue-500 text-center dark:text-blue-500">Login</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4 mb-4">
+    <form onSubmit={handleLogin} className="flex flex-col gap-4 mb-4">
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border p-2 rounded"
+            className="border py-2 p-5 rounded dark:bg-gray-700 dark:text-white dark:placeholder-gray-500 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full transition-colors"
           />
 
           <div className="relative">
@@ -61,32 +61,32 @@ const LoginPage = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="border p-2 rounded w-full pr-10"
+              className="border py-2 p-5 rounded w-full pr-10 dark:bg-gray-700 dark:text-white dark:placeholder-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
             />
             <span
-              className="absolute right-3 top-2.5 cursor-pointer text-gray-500"
+              className="absolute right-3 top-2.5 cursor-pointer text-gray-500 dark:text-gray-300"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
 
-       <button
-  type="submit"
-  className="w-full bg-blue-600 text-white py-2 rounded"
->
-  Login
-</button>
-</form>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
+          >
+            Login
+          </button>
+        </form>
 <button
   onClick={handleGoogleLogin}
-  className="w-full flex items-center justify-center gap-2 border py-2 rounded hover:bg-gray-100"
+  className="w-full flex items-center justify-center text-black gap-2 border py-2 rounded hover:bg-gray-100"
 >
   <FcGoogle size={20} /> Login with Google
 </button>
 
 
-        <p className="mt-4 text-center text-sm">
+        <p className="mt-4 text-center text-black text-sm">
           Don't have an account? <a href="/register" className="text-blue-500">Register</a>
         </p>
       </div>
@@ -95,3 +95,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
