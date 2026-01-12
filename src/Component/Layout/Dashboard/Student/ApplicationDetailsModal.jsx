@@ -8,7 +8,7 @@ const ApplicationDetailsModal = ({ application, onClose }) => {
       <div className="bg-white rounded-lg w-11/12 md:w-2/3 lg:w-1/2 p-6 relative shadow-lg">
         <h2 className="text-2xl font-bold mb-4">Application Details</h2>
 
-        <div className="space-y-2">
+        <div className="space-y-2 ">
           <p><strong>University Name:</strong> {application.universityName}</p>
           <p><strong>Address:</strong> {application.universityCity || application.universityAddress || "N/A"}</p>
           <p><strong>Subject Category:</strong> {application.subjectCategory || "N/A"}</p>

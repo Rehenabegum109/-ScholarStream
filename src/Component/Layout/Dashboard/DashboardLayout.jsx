@@ -22,7 +22,7 @@ const DashboardLayout = () => {
   
   const { role, roleLoading } = useRole();
 
-  // if (roleLoading) return <div>Loading...</div>;
+  
   console.log(role)
 
   return (

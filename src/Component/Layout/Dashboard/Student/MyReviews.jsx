@@ -10,7 +10,6 @@ const MyReviews = () => {
   const [newRating, setNewRating] = useState(1);
   const AxiosSecure = useAxiosSecure();
 
-  // Fetch reviews
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -25,14 +24,14 @@ const MyReviews = () => {
     fetchReviews();
   }, [AxiosSecure]);
 
-  // Handle edit
+  
   const handleEdit = (review) => {
     setEditingReview(review);
     setNewComment(review.reviewComment);
     setNewRating(review.ratingPoint);
   };
 
-  // Handle update
+  
   const handleUpdate = async () => {
     try {
       await AxiosSecure.patch(`/reviews/${editingReview._id}`, {
@@ -66,8 +65,8 @@ const MyReviews = () => {
     return <p className="text-center mt-6 text-blue-600 font-semibold">Loading...</p>;
 
   return (
-    <div className="p-4">
-      {/* Desktop Table */}
+    <div className="p-4 text-black">
+      
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full border border-gray-200">
           <thead className="bg-gray-100">
@@ -166,3 +165,4 @@ const MyReviews = () => {
 };
 
 export default MyReviews;
+

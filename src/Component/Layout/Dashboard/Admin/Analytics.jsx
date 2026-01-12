@@ -9,7 +9,7 @@ import useAxiosSecure from "../../../Hook/useAxiosSecure";
 const Analytics = () => {
   const AxiosSecure = useAxiosSecure();
 
-  // States
+  
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalScholarships, setTotalScholarships] = useState(0);
   const [totalFees, setTotalFees] = useState(0);
@@ -18,7 +18,6 @@ const Analytics = () => {
   const [pieRadius, setPieRadius] = useState(getPieRadius());
   const [showLabels, setShowLabels] = useState(getShowLabels());
 
-  // Adjust Pie radius based on screen width
   function getPieRadius() {
     if (window.innerWidth < 640) return 50;
     if (window.innerWidth < 768) return 70;
@@ -43,13 +42,13 @@ const Analytics = () => {
 
   const fetchAnalyticsData = async () => {
     try {
-      // Fetch Users
+    
       const usersRes = await AxiosSecure.get("/users");
       setTotalUsers(Array.isArray(usersRes.data) ? usersRes.data.length : 0);
 
-      // Fetch Scholarships
+     
       const scholarshipsRes = await AxiosSecure.get("/scholarships");
-      // Check if data is array or nested
+      
       let scholarshipsArray = [];
       if (Array.isArray(scholarshipsRes.data)) {
         scholarshipsArray = scholarshipsRes.data;
@@ -58,11 +57,11 @@ const Analytics = () => {
       }
       setTotalScholarships(scholarshipsArray.length);
 
-      // Fetch Applications
+      
       const appsRes = await AxiosSecure.get("/applications");
       const applications = Array.isArray(appsRes.data) ? appsRes.data : [];
       
-      // Total Fees
+     
       const paidApps = applications.filter(app => app.paymentStatus === "paid");
       const totalFeesCollected = paidApps.reduce(
         (sum, app) => sum + (app.applicationFees || 0) + (app.serviceCharge || 0),
@@ -70,7 +69,7 @@ const Analytics = () => {
       );
       setTotalFees(totalFeesCollected);
 
-      // Prepare chart data
+  
       const chartData = {};
       applications.forEach(app => {
         const key = chartType === "category" ? app.scholarshipCategory : app.universityName;
@@ -89,10 +88,10 @@ const Analytics = () => {
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28CF0", "#FF6384", "#36A2EB"];
 
   return (
-    <div className="p-4 sm:p-6 bg-white shadow rounded max-w-7xl mx-auto space-y-6 overflow-x-hidden">
+    <div className="p-4 sm:p-6 text-black bg-white shadow rounded max-w-7xl mx-auto space-y-6 overflow-x-hidden">
       <h2 className="text-2xl font-bold mb-4">Platform Analytics</h2>
 
-      {/* Summary Cards */}
+    
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
         <div className="p-4 bg-blue-100 rounded shadow text-center">
           <h3 className="text-lg font-semibold">Total Users</h3>

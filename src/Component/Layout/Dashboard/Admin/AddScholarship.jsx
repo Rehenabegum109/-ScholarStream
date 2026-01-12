@@ -60,7 +60,7 @@ const AddScholarship = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow rounded max-w-4xl mx-auto">
+    <div className="p-6 bg-white text-black shadow rounded max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Add Scholarship</h2>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Scholarship Name */}

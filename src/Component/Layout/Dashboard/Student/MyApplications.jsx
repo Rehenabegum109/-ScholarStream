@@ -123,7 +123,7 @@ const MyApplications = () => {
     );
 
     if (res.data.url) {
-      window.location.href = res.data.url; // Stripe checkout page
+      window.location.href = res.data.url; 
     }
   } catch (err) {
     console.error("Payment error:", err.response?.data || err.message);
@@ -133,7 +133,7 @@ const MyApplications = () => {
 
 
   return (
-    <div className="p-6">
+    <div className="p-6 text-black">
       <h2 className="text-2xl font-bold mb-6">My Applications</h2>
 
       {/* Desktop Table */}

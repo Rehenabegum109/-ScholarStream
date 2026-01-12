@@ -8,8 +8,8 @@ const useAxiosSecure = () => {
   const navigate = useNavigate();
 
   const axiosInstance = axios.create({
-    // baseURL: "https://scholarships-server-kappa.vercel.app",
-    baseURL: "http://localhost:3000",
+    baseURL: "https://scholarships-server-kappa.vercel.app",
+   
   });
 
   

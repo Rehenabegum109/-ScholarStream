@@ -2,7 +2,7 @@ import React from "react";
 
 const AdminDashboard = () => {
   return (
-    <div className="p-6">
+    <div className="p-6 text-black">
       <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
       <p className="mb-6">Welcome, admin! Here you can manage your system and monitor all activities.</p>
 

@@ -70,7 +70,7 @@ const ManageUsers = () => {
     filterRole === "All" ? users : users.filter((user) => user.role === filterRole);
 
   return (
-   <div className="p-4 sm:p-6 bg-white shadow rounded max-w-6xl mx-auto">
+   <div className="p-4 sm:p-6 bg-white text-black shadow rounded max-w-6xl mx-auto">
   <h2 className="text-xl sm:text-2xl font-bold mb-4">Manage Users</h2>
 
   {/* Role Filter */}
