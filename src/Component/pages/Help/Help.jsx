@@ -18,7 +18,7 @@ const HelpPage = () => {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 min-h-screen px-4 py-12">
+    <div className="bg-gray-50 dark:bg-slate-900 pt-20 text-gray-800 dark:text-gray-100 min-h-screen px-4 py-12">
 
       {/* Hero Section */}
       <section className="text-center mb-12">

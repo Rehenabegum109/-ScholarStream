@@ -3,7 +3,7 @@ import { Link } from "react-router";
 
 const ScholarshipCard = ({ scholarship }) => {
   return (
-    <div className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition flex flex-col">
+    <div className="border pt-10 rounded-lg overflow-hidden shadow hover:shadow-lg transition flex flex-col">
       
       <img
         src={scholarship.universityImage}

@@ -1,6 +1,6 @@
 const ResourcesSection = () => {
   return (
-    <div className="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 min-h-screen">
+    <div className="bg-gray-50 pt-10 dark:bg-slate-900 text-gray-800 dark:text-gray-100 min-h-screen">
 
       {/* Hero Section */}
       <section className="relative bg-blue-600 dark:bg-blue-800 text-white py-16 px-4 text-center">

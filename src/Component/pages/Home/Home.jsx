@@ -50,7 +50,7 @@ const Home = () => {
   topScholarships = topScholarships.slice(0, 6);
 
   return (
-    <div className="min-h-screen text-black">
+    <div className="min-h-screen w-full overflow-x-hidden text-black">
 
       
       <Banner />

@@ -71,7 +71,7 @@ const ScholarshipDetails = () => {
     return <p className="p-6 text-center text-red-500 font-semibold">Scholarship not found</p>;
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6 pt-10">
       {/* Scholarship Info */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

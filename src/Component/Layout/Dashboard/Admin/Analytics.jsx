@@ -1,159 +1,173 @@
-
 import React, { useEffect, useState } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell
 } from "recharts";
+import { motion, AnimatePresence } from "framer-motion";
 import useAxiosSecure from "../../../Hook/useAxiosSecure";
 
 const Analytics = () => {
   const AxiosSecure = useAxiosSecure();
 
-  
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalScholarships, setTotalScholarships] = useState(0);
   const [totalFees, setTotalFees] = useState(0);
   const [applicationsData, setApplicationsData] = useState([]);
-  const [chartType, setChartType] = useState("university"); 
-  const [pieRadius, setPieRadius] = useState(getPieRadius());
-  const [showLabels, setShowLabels] = useState(getShowLabels());
+  const [chartType, setChartType] = useState("university");
 
-  function getPieRadius() {
-    if (window.innerWidth < 640) return 50;
-    if (window.innerWidth < 768) return 70;
-    return 120;
-  }
+  const [pieRadius, setPieRadius] = useState(80);
+  const [showLabels, setShowLabels] = useState(true);
 
-  function getShowLabels() {
-    return window.innerWidth >= 640;
-  }
+  const COLORS = ["#6366F1", "#22C55E", "#F59E0B", "#EF4444", "#A855F7"];
 
   useEffect(() => {
     fetchAnalyticsData();
 
     const handleResize = () => {
-      setPieRadius(getPieRadius());
-      setShowLabels(getShowLabels());
+      setPieRadius(window.innerWidth < 768 ? 60 : 100);
+      setShowLabels(window.innerWidth >= 640);
     };
 
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [chartType]);
 
   const fetchAnalyticsData = async () => {
     try {
-    
       const usersRes = await AxiosSecure.get("/users");
-      setTotalUsers(Array.isArray(usersRes.data) ? usersRes.data.length : 0);
+      setTotalUsers(usersRes.data?.length || 0);
 
-     
       const scholarshipsRes = await AxiosSecure.get("/scholarships");
-      
-      let scholarshipsArray = [];
-      if (Array.isArray(scholarshipsRes.data)) {
-        scholarshipsArray = scholarshipsRes.data;
-      } else if (Array.isArray(scholarshipsRes.data.scholarships)) {
-        scholarshipsArray = scholarshipsRes.data.scholarships;
-      }
+      const scholarshipsArray = Array.isArray(scholarshipsRes.data)
+        ? scholarshipsRes.data
+        : scholarshipsRes.data?.scholarships || [];
+
       setTotalScholarships(scholarshipsArray.length);
 
-      
       const appsRes = await AxiosSecure.get("/applications");
       const applications = Array.isArray(appsRes.data) ? appsRes.data : [];
-      
-     
+
       const paidApps = applications.filter(app => app.paymentStatus === "paid");
+
       const totalFeesCollected = paidApps.reduce(
         (sum, app) => sum + (app.applicationFees || 0) + (app.serviceCharge || 0),
         0
       );
+
       setTotalFees(totalFeesCollected);
 
-  
       const chartData = {};
       applications.forEach(app => {
-        const key = chartType === "category" ? app.scholarshipCategory : app.universityName;
-        if (!chartData[key]) chartData[key] = 0;
-        chartData[key] += 1;
+        const key =
+          chartType === "category"
+            ? app.scholarshipCategory
+            : app.universityName;
+
+        chartData[key] = (chartData[key] || 0) + 1;
       });
 
-      const formattedData = Object.keys(chartData).map(key => ({ name: key, count: chartData[key] }));
-      setApplicationsData(formattedData);
+      const formattedData = Object.keys(chartData).map(key => ({
+        name: key,
+        count: chartData[key],
+      }));
 
+      setApplicationsData(formattedData);
     } catch (err) {
-      console.error("Error fetching analytics data:", err);
+      console.error(err);
     }
   };
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28CF0", "#FF6384", "#36A2EB"];
-
   return (
-    <div className="p-4 sm:p-6 text-black bg-white shadow rounded max-w-7xl mx-auto space-y-6 overflow-x-hidden">
-      <h2 className="text-2xl font-bold mb-4">Platform Analytics</h2>
+    <div className="p-6 max-w-7xl mx-auto space-y-8 bg-white dark:bg-black text-black dark:text-white">
 
-    
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
-        <div className="p-4 bg-blue-100 rounded shadow text-center">
-          <h3 className="text-lg font-semibold">Total Users</h3>
-          <p className="text-2xl font-bold text-black">{totalUsers}</p>
-        </div>
-        <div className="p-4 bg-green-100 rounded shadow text-center">
-          <h3 className="text-lg font-semibold">Total Fees Collected</h3>
-          <p className="text-2xl font-bold text-black">${totalFees}</p>
-        </div>
-        <div className="p-4 bg-yellow-100 rounded shadow text-center">
-          <h3 className="text-lg font-semibold">Total Scholarships</h3>
-          <p className="text-2xl font-bold text-black">{totalScholarships}</p>
-        </div>
+      {/* HEADER */}
+      <h2 className="text-3xl font-bold">Platform Analytics</h2>
+
+      {/* KPI CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+        <motion.div whileHover={{ scale: 1.05 }}
+          className="p-5 rounded-xl bg-blue-50 dark:bg-white/10 shadow">
+          <h3>Total Users</h3>
+          <p className="text-2xl font-bold">{totalUsers}</p>
+        </motion.div>
+
+        <motion.div whileHover={{ scale: 1.05 }}
+          className="p-5 rounded-xl bg-green-50 dark:bg-white/10 shadow">
+          <h3>Total Fees</h3>
+          <p className="text-2xl font-bold">${totalFees}</p>
+        </motion.div>
+
+        <motion.div whileHover={{ scale: 1.05 }}
+          className="p-5 rounded-xl bg-yellow-50 dark:bg-white/10 shadow">
+          <h3>Total Scholarships</h3>
+          <p className="text-2xl font-bold">{totalScholarships}</p>
+        </motion.div>
+
       </div>
 
-      {/* Chart Type Selector */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-4">
+      {/* SELECTOR */}
+      <div className="flex gap-4 items-center">
         <label className="font-medium">Chart Type:</label>
+
         <select
+          className="border p-2 rounded"
           value={chartType}
           onChange={(e) => setChartType(e.target.value)}
-          className="border px-2 py-1 rounded w-full sm:w-auto"
         >
-          <option value="university">Applications per University</option>
-          <option value="category">Applications per Scholarship Category</option>
+          <option value="university">University</option>
+          <option value="category">Category</option>
         </select>
       </div>
 
-      {/* Bar Chart */}
-      <div className="w-full h-64 sm:h-80 md:h-96">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={applicationsData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-            <XAxis dataKey="name" tick={{ fontSize: 12 }} interval={0} angle={-30} textAnchor="end" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="count" fill="#8884d8" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {/* BAR CHART (ANIMATED) */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={chartType}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.4 }}
+          className="w-full h-80"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={applicationsData}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#6366F1" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </AnimatePresence>
 
-      {/* Pie Chart */}
-      <div className="w-full h-64 sm:h-80 md:h-96">
+      {/* PIE CHART */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full h-80"
+      >
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={applicationsData}
               dataKey="count"
               nameKey="name"
-              cx="50%"
-              cy="50%"
               outerRadius={pieRadius}
               label={showLabels}
             >
-              {applicationsData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              {applicationsData.map((_, index) => (
+                <Cell key={index} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
             <Tooltip />
           </PieChart>
         </ResponsiveContainer>
-      </div>
+      </motion.div>
+
     </div>
   );
 };
